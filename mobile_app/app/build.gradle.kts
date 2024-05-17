@@ -94,4 +94,7 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.0")
     // https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+
+    // viewModels
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

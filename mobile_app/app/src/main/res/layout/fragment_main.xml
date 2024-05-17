@@ -17,14 +17,17 @@
         app:layout_constraintTop_toTopOf="parent" >
 
     </androidx.recyclerview.widget.RecyclerView>
+
     <FrameLayout
         android:id="@+id/map_container_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
+
     <LinearLayout
         android:id="@+id/main_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="100dp"
         android:orientation="vertical"
         app:behavior_hideable="false"
         app:behavior_peekHeight="100dp"
