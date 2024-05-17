@@ -11,7 +11,9 @@ import com.ssafy.waybackhome.databinding.ListItemGeoAddressBinding
 class SearchListAdapter : ListAdapter<GeoAddress, SearchListAdapter.SearchViewHolder>(GeoAddressComparator) {
     class SearchViewHolder(val binding : ListItemGeoAddressBinding) : ViewHolder(binding.root){
         fun bind(item : GeoAddress){
-
+            binding.tvListItemAddress.text = item.jibunAddress
+            binding.tvListItemRoad.text = item.roadAddress
+            binding.tvListItemDist.text = "${item.distance}m"
         }
     }
 

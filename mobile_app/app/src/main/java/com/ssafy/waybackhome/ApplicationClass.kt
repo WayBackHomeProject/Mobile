@@ -33,9 +33,8 @@ class ApplicationClass : Application() {
             .addInterceptor(GeoHeaderInterceptor())
             .build()
 
-
         serverAPI = initializeAPI(gson, defaultClient, BuildConfig.SERVER_URL)
-        naverAPI = initializeAPI(gson, naverGeoClient,"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode")
+        naverAPI = initializeAPI(gson, naverGeoClient,"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/")
     }
     override fun onCreate() {
         super.onCreate()

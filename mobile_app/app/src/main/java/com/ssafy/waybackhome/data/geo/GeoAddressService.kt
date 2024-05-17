@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface GeoAddressService {
-    @GET
+    @GET("geocode")
     suspend fun getAddress(
         /**
          * 검색 주소
@@ -25,23 +25,23 @@ interface GeoAddressService {
          *
          * ex ) HCODE@4113554500;4113555000
          */
-        @Query("filter") filter : String?,
+        @Query("filter") filter : String? = null,
         /**
          * - 기본값 : kor
          * - eng 추가 시 영문 주소 검색 활성화
          */
-        @Query("language") language : String?,
+        @Query("language") language : String? = null,
         /**
          * ### 페이지 번호
          * - 기본값 : 1
          */
-        @Query("page") page : Int?,
+        @Query("page") page : Int? = null,
         /**
          * ### 결과 목록 크기
          * - 입력 범위 : 1~100
          * - 기본값 : 10
          */
-        @Query("number") number : Int?
+        @Query("number") number : Int? = null
     ) : AddressResponse
 
     companion object{
