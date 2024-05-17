@@ -10,6 +10,8 @@ class LocationViewModel : ViewModel() {
     private val _currentLocation = MutableLiveData<LatLng>()
     val currentLocation : LiveData<LatLng> get() = _currentLocation
 
+    var state = MutableLiveData<Boolean>()
+
     fun setLocation(location : LatLng){
         _currentLocation.value = location
     }

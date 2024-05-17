@@ -1,8 +1,11 @@
 package com.ssafy.waybackhome.data.geo
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 
+@Parcelize
 data class GeoAddress(
     /**
      * 도로명 주소
@@ -29,4 +32,4 @@ data class GeoAddress(
      * 검색시 위치로부터의 거리 ( 단위 : m )
      */
     val distance : Double
-)
+) : Parcelable

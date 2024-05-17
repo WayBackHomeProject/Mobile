@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     // room support
     id ("com.google.devtools.ksp")
+    id ("kotlin-parcelize")
 }
 
 android {
