@@ -7,12 +7,21 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.ListItemDestinationBinding
+import com.ssafy.waybackhome.util.OnItemClickListener
 
 class DestinationListAdapter : ListAdapter<Destination, DestinationListAdapter.DestinationViewHolder>(DestinationComparator) {
+
+    private var onItemClickListener : OnItemClickListener<Destination>? = null
+    fun setOnItemClickListener(onItemClickListener: OnItemClickListener<Destination>){
+        this.onItemClickListener = onItemClickListener
+    }
 
     inner class DestinationViewHolder(val binding: ListItemDestinationBinding) : ViewHolder(binding.root){
         fun bind(item : Destination){
             binding.tvName.text = item.name
+            binding.root.setOnClickListener {
+                onItemClickListener?.onClick(item)
+            }
         }
     }
 

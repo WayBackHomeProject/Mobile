@@ -3,19 +3,14 @@ package com.ssafy.waybackhome.main
 import MapContainerFragment
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.ViewCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.ssafy.waybackhome.R
+import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
-import com.ssafy.waybackhome.permission.PermissionChecker
-import com.ssafy.waybackhome.search.SearchAddressFragment
 import com.ssafy.waybackhome.util.BaseFragment
 
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
@@ -26,6 +21,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var mapFragment : MapContainerFragment
 
+    private fun editDestination(destination: Destination){
+        val action = MainFragmentDirections.actionMainFragmentToDestinationFragment(destination)
+        findNavController().navigate(action)
+    }
     private fun adjustMapSize(){
         val totalHeight = binding.root.height
         val bottomSheetTop = binding.mainBottomSheet.top
@@ -33,6 +32,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
     private fun initView(){
         destinationAdapter = DestinationListAdapter()
+        destinationAdapter.setOnItemClickListener{dest ->
+            editDestination(dest)
+        }
         binding.rvDestinations.adapter = destinationAdapter
         binding.rvDestinations.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
