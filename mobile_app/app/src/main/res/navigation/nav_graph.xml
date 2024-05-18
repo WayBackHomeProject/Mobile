@@ -13,8 +13,7 @@
         <action
             android:id="@+id/action_searchAddressFragment_to_destinationFragment"
             app:destination="@id/destinationFragment"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/destinationFragment" />
+            app:launchSingleTop="true" />
         <argument
             android:name="address"
             app:argType="string"
@@ -27,7 +26,9 @@
         tools:layout="@layout/fragment_destination" >
         <action
             android:id="@+id/action_destinationFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment" />
         <action
             android:id="@+id/action_destinationFragment_to_searchAddressFragment"
             app:destination="@id/searchAddressFragment" />

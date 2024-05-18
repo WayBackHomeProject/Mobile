@@ -31,7 +31,8 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
     private lateinit var mapFragment: MapFragment
 
     private fun closePage(){
-        findNavController().popBackStack()
+        val action = DestinationFragmentDirections.actionDestinationFragmentToMainFragment()
+        findNavController().navigate(action)
     }
     private fun saveDestination(destination: Destination){
         viewModel.insertDestination(
