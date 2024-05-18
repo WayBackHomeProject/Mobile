@@ -23,11 +23,11 @@ data class GeoAddress(
     /**
      * 위도
      */
-    @SerializedName("x") val lat : String,
+    @SerializedName("y") val lat : String,
     /**
      * 경도
      */
-    @SerializedName("y") val lon : String,
+    @SerializedName("x") val lon : String,
     /**
      * 검색시 위치로부터의 거리 ( 단위 : m )
      */
