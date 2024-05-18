@@ -1,8 +1,11 @@
 package com.ssafy.waybackhome.data
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = "destination")
 data class Destination(
     /**
@@ -29,6 +32,11 @@ data class Destination(
      * 경도
      */
     val lng : Double,
-){
-
+) : Parcelable{
+    constructor(
+        address : String,
+        road : String,
+        lat: Double,
+        lng: Double
+    ) : this(0, "", address, road, lat, lng)
 }
