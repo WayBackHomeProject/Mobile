@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
@@ -23,19 +24,13 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
 
     private val viewModel : DestinationViewModel by viewModels()
 
+    private val args: DestinationFragmentArgs by navArgs()
+
     private lateinit var naverMap: NaverMap
     private lateinit var mapFragment: MapFragment
 
     private fun initData(){
-        val destination = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable(ARG_DEST, Destination::class.java)
-        } else {
-            arguments?.getParcelable(ARG_DEST)// as Destination?
-        }
-
-        if (destination != null) {
-            viewModel.setDestination(destination)
-        }
+        viewModel.setDestination(args.destination)
     }
     private fun initObserver(){
         viewModel.destination.observe(viewLifecycleOwner){ destination ->
@@ -118,13 +113,4 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         initObserver()
         initMap()
     }
-    companion object{
-        fun newInstance(destination: Destination) = DestinationFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(ARG_DEST, destination)
-            }
-        }
-    }
 }
-
-private val ARG_DEST = "ARG_ADDRESS"
