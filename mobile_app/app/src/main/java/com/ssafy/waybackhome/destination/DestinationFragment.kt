@@ -89,7 +89,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
             }
         }
         binding.tbDestination.setOnMenuItemClickListener { menu->
-            if(menu.itemId == R.id.menu_destination_close){
+            if(menu.itemId == R.id.menu_close){
                 closePage()
             }
             false
