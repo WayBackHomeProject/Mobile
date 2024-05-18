@@ -72,7 +72,8 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         }
     }
     private fun initView(destination: Destination){
-        binding.tvAddress.text = destination.address
+        binding.tbDestination.setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
+        binding.tbDestination.title = destination.address
         binding.etDestinationName.setText(destination.name)
     }
     private fun initListener(){
@@ -87,8 +88,14 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
                 }
             }
         }
-        binding.btnCloseDestination.setOnClickListener {
-            closePage()
+        binding.tbDestination.setOnMenuItemClickListener { menu->
+            if(menu.itemId == R.id.menu_destination_close){
+                closePage()
+            }
+            false
+        }
+        binding.tbDestination.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
     }
     private fun initClient(){
