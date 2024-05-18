@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
+import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.data.geo.GeoAddress
 import com.ssafy.waybackhome.data.geo.GeoAddressService
 import kotlinx.coroutines.launch
