@@ -7,13 +7,24 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.ssafy.waybackhome.data.geo.GeoAddress
 import com.ssafy.waybackhome.databinding.ListItemGeoAddressBinding
+import com.ssafy.waybackhome.util.OnItemClickListener
 
 class SearchListAdapter : ListAdapter<GeoAddress, SearchListAdapter.SearchViewHolder>(GeoAddressComparator) {
-    class SearchViewHolder(val binding : ListItemGeoAddressBinding) : ViewHolder(binding.root){
+
+    private var onItemClickListener : OnItemClickListener<GeoAddress>? = null
+
+    fun setOnItemClickListener(onItemClickListener: OnItemClickListener<GeoAddress>){
+        this.onItemClickListener = onItemClickListener
+    }
+
+    inner class SearchViewHolder(val binding : ListItemGeoAddressBinding) : ViewHolder(binding.root){
         fun bind(item : GeoAddress){
             binding.tvListItemAddress.text = item.jibunAddress
             binding.tvListItemRoad.text = item.roadAddress
             binding.tvListItemDist.text = "${item.distance}m"
+            binding.root.setOnClickListener {
+                onItemClickListener?.onClick(item)
+            }
         }
     }
 
