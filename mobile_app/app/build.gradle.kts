@@ -6,6 +6,8 @@ plugins {
     // room support
     id ("com.google.devtools.ksp")
     id ("kotlin-parcelize")
+    // navigation safeargs
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {

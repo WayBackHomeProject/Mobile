@@ -12,7 +12,13 @@
         tools:layout="@layout/fragment_search_address" >
         <action
             android:id="@+id/action_searchAddressFragment_to_destinationFragment"
-            app:destination="@id/destinationFragment" />
+            app:destination="@id/destinationFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/destinationFragment" />
+        <argument
+            android:name="address"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/destinationFragment"
@@ -25,6 +31,9 @@
         <action
             android:id="@+id/action_destinationFragment_to_searchAddressFragment"
             app:destination="@id/searchAddressFragment" />
+        <argument
+            android:name="destination"
+            app:argType="com.ssafy.waybackhome.data.Destination" />
     </fragment>
     <fragment
         android:id="@+id/mainFragment"

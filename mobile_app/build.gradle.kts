@@ -6,3 +6,13 @@ plugins {
     // keep in mind that ksp version has to match kotlin version
     id("com.google.devtools.ksp") version "1.9.22-1.0.17" apply false
 }
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        val nav_version = "2.7.7"
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
+    }
+}
