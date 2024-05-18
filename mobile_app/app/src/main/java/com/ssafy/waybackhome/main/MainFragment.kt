@@ -41,20 +41,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 viewModel.bottomSheetState = newState
-                when(newState){
-                    BottomSheetBehavior.STATE_EXPANDED -> {}
-                    else -> {
-                        adjustMapSize()
-                    }
+                if(newState != BottomSheetBehavior.STATE_EXPANDED){
+                    adjustMapSize()
                 }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                when(bottomSheetBehavior.state){
-                    BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING -> {
-                        adjustMapSize()
-                    }
-                    else -> {}
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_DRAGGING || bottomSheetBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
+                    adjustMapSize()
                 }
             }
         })
@@ -74,7 +68,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
     }
     private fun openSearch(){
-        findNavController().navigate(R.id.action_mainFragment_to_searchAddressFragment)
+        val action = MainFragmentDirections.actionMainFragmentToSearchAddressFragment(null)
+        findNavController().navigate(action)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
