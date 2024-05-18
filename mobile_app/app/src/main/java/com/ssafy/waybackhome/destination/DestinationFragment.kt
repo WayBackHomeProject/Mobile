@@ -1,7 +1,7 @@
 package com.ssafy.waybackhome.destination
 
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,6 +20,7 @@ import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.FragmentDestinationBinding
 import com.ssafy.waybackhome.util.BaseFragment
 
+private const val TAG = "DestinationFragment"
 class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDestinationBinding::inflate), OnMapReadyCallback {
 
     private val viewModel : DestinationViewModel by viewModels()
@@ -29,6 +30,38 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
     private lateinit var naverMap: NaverMap
     private lateinit var mapFragment: MapFragment
 
+    private fun closePage(){
+        findNavController().popBackStack()
+    }
+    private fun saveDestination(destination: Destination){
+        viewModel.insertDestination(
+            destination.copy(
+                name = binding.etDestinationName.text.toString()
+            )
+        )
+        closePage()
+    }
+    private fun editDestination(destination: Destination){
+        viewModel.updateDestination(
+            destination.copy(
+                name = binding.etDestinationName.text.toString()
+            )
+        )
+        closePage()
+    }
+    private fun setLocation(){
+        viewModel.destination.value?.run {
+            val markerPosition = LatLng(lat, lng)
+            val marker = Marker()
+            marker.position = markerPosition
+            marker.width = 30
+            marker.height = 30
+            marker.map = naverMap
+
+            //Log.d(TAG, "setLocation: $markerPosition")
+            naverMap.cameraPosition = CameraPosition(markerPosition, 16.0)
+        }
+    }
     private fun initData(){
         viewModel.setDestination(args.destination)
     }
@@ -54,22 +87,8 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
             }
         }
         binding.btnCloseDestination.setOnClickListener {
-            findNavController().popBackStack()
+            closePage()
         }
-    }
-    private fun saveDestination(destination: Destination){
-        viewModel.insertDestination(
-            destination.copy(
-                name = binding.etDestinationName.text.toString()
-            )
-        )
-    }
-    private fun editDestination(destination: Destination){
-        viewModel.updateDestination(
-            destination.copy(
-                name = binding.etDestinationName.text.toString()
-            )
-        )
     }
     private fun initClient(){
         NaverMapSdk.getInstance(requireContext()).client =
@@ -79,24 +98,13 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         mapFragment = MapFragment.newInstance(
             NaverMapOptions()
                 .camera(CameraPosition(NaverMap.DEFAULT_CAMERA_POSITION.target, 16.0))
-                .locationButtonEnabled(true)
         )
 
         mapFragment.getMapAsync(this)
 
         childFragmentManager.beginTransaction()
-            .replace(R.id.mapFrame, mapFragment)
+            .replace(R.id.map_destination_page, mapFragment)
             .commitNow()
-    }
-    private fun setLocation(){
-        viewModel.destination.value?.run {
-            val markerPosition = LatLng(lat, lng)
-            val marker = Marker()
-            marker.position = markerPosition
-            marker.width = 30
-            marker.height = 30
-            marker.map = naverMap
-        }
     }
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
@@ -112,5 +120,6 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         super.onViewCreated(view, savedInstanceState)
         initObserver()
         initMap()
+        initListener()
     }
 }
