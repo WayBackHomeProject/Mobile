@@ -14,6 +14,11 @@ private const val TAG = "DestinationViewModel"
 class DestinationViewModel : ViewModel() {
 
     private var _destination = MutableLiveData<Destination>()
+
+    /**
+     * [DestinationFragment]에서 사용되는 목적지 정보
+     * Navigate할 때 초기값으로 입력
+     */
     val destination : LiveData<Destination> get() = _destination
     fun changeAddress(address: GeoAddress){
         _destination.value = _destination.value?.copy(

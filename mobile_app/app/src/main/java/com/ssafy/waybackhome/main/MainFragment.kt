@@ -2,22 +2,28 @@ package com.ssafy.waybackhome.main
 
 import MapContainerFragment
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.naver.maps.geometry.LatLng
+import com.ssafy.waybackhome.LocationViewModel
 import com.ssafy.waybackhome.R
 import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
 import com.ssafy.waybackhome.destination.DestinationViewModel
 import com.ssafy.waybackhome.util.BaseFragment
 
+private const val TAG = "MainFragment"
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
 
     private val viewModel: MainViewModel by viewModels()
+    private val locationViewModel : LocationViewModel by activityViewModels()
     private val destinationViewModel : DestinationViewModel by navGraphViewModels(R.id.nav_graph)
 
     private lateinit var destinationAdapter : DestinationListAdapter
@@ -35,7 +41,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         mapFragment.changeBottomPadding(totalHeight-bottomSheetTop)
     }
     private fun initView(){
-        destinationAdapter = DestinationListAdapter()
+        destinationAdapter = DestinationListAdapter(locationViewModel.currentLocation)
         destinationAdapter.setOnItemClickListener{dest ->
             editDestination(dest)
         }
@@ -44,6 +50,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.mainBottomSheet)
         bottomSheetBehavior.state = viewModel.bottomSheetState
+        // BottomSheet 크기에 따라 맵 사이즈 조절
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 viewModel.bottomSheetState = newState
@@ -64,8 +71,23 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             .commitNow()
     }
     private fun initObserver(){
+        // 목적지 목록 갱신
         viewModel.destinations.observe(viewLifecycleOwner){ list ->
-            destinationAdapter.submitList(list)
+            val sorted = list.sortedBy {
+                val latLng = LatLng(it.lat, it.lng)
+                val dist = locationViewModel.currentLocation.value?.let { location -> latLng.distanceTo(location) }
+                dist
+            }
+            destinationAdapter.submitList(sorted)
+        }
+        // 위치에 따른 목적지 목록 순서 갱신
+        locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
+            val sorted = viewModel.destinations.value?.sortedBy {
+                val latLng = LatLng(it.lat, it.lng)
+                val dist = latLng.distanceTo(location)
+                dist
+            }
+            if(sorted != null) destinationAdapter.submitList(sorted)
         }
     }
     private fun initListener(){
