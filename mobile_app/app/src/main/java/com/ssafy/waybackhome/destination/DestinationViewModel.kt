@@ -1,5 +1,6 @@
 package com.ssafy.waybackhome.destination
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,10 +10,19 @@ import com.ssafy.waybackhome.data.LocalRepository
 import com.ssafy.waybackhome.data.geo.GeoAddress
 import kotlinx.coroutines.launch
 
+private const val TAG = "DestinationViewModel"
 class DestinationViewModel : ViewModel() {
 
     private var _destination = MutableLiveData<Destination>()
     val destination : LiveData<Destination> get() = _destination
+    fun changeAddress(address: GeoAddress){
+        _destination.value = _destination.value?.copy(
+            address = address.jibunAddress,
+            road = address.roadAddress,
+            lat = address.lat.toDouble(),
+            lng = address.lon.toDouble()
+        )
+    }
     fun setDestination(destination: Destination){
         _destination.value = destination
     }
@@ -28,5 +38,10 @@ class DestinationViewModel : ViewModel() {
         viewModelScope.launch {
             repo.updateDestination(destination)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(TAG, "onCleared: ")
     }
 }

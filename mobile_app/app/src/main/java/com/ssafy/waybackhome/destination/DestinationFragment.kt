@@ -3,9 +3,9 @@ package com.ssafy.waybackhome.destination
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
@@ -23,9 +23,7 @@ import com.ssafy.waybackhome.util.BaseFragment
 private const val TAG = "DestinationFragment"
 class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDestinationBinding::inflate), OnMapReadyCallback {
 
-    private val viewModel : DestinationViewModel by viewModels()
-
-    private val args: DestinationFragmentArgs by navArgs()
+    private val destinationViewModel : DestinationViewModel by navGraphViewModels(R.id.nav_graph)
 
     private lateinit var naverMap: NaverMap
     private lateinit var mapFragment: MapFragment
@@ -35,7 +33,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         findNavController().navigate(action)
     }
     private fun saveDestination(destination: Destination){
-        viewModel.insertDestination(
+        destinationViewModel.insertDestination(
             destination.copy(
                 name = binding.etDestinationName.text.toString()
             )
@@ -43,7 +41,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         closePage()
     }
     private fun editDestination(destination: Destination){
-        viewModel.updateDestination(
+        destinationViewModel.updateDestination(
             destination.copy(
                 name = binding.etDestinationName.text.toString()
             )
@@ -51,7 +49,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         closePage()
     }
     private fun setLocation(){
-        viewModel.destination.value?.run {
+        destinationViewModel.destination.value?.run {
             val markerPosition = LatLng(lat, lng)
             val marker = Marker()
             marker.position = markerPosition
@@ -63,18 +61,16 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
             naverMap.cameraPosition = CameraPosition(markerPosition, 16.0)
         }
     }
-    private fun initData(){
-        viewModel.setDestination(args.destination)
-    }
     private fun initObserver(){
-        viewModel.destination.observe(viewLifecycleOwner){ destination ->
+        destinationViewModel.destination.observe(viewLifecycleOwner){ destination ->
             initView(destination)
         }
     }
     private fun initView(destination: Destination){
         binding.tbDestination.setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
-        binding.tbDestination.title = destination.address
+        binding.tvDestinationTitle.text = destination.address
         binding.etDestinationName.setText(destination.name)
+        binding.btnEditDestination.visibility = if(destinationViewModel.destination.value?.name.isNullOrBlank()) View.GONE else View.VISIBLE
     }
     private fun initListener(){
         binding.btnDestinationConfirm.setOnClickListener{
@@ -82,7 +78,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
             if(binding.etDestinationName.text.isNullOrBlank()){
                 binding.etDestinationName.error = "목적지 이름을 입력해 주세요."
             } else {
-                viewModel.destination.value?.run {
+                destinationViewModel.destination.value?.run {
                     if(name.isBlank()) saveDestination(this)
                     else editDestination(this)
                 }
@@ -93,6 +89,12 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
                 closePage()
             }
             false
+        }
+        binding.btnEditDestination.setOnClickListener {
+            destinationViewModel.destination.value?.run {
+                val action = DestinationFragmentDirections.actionDestinationFragmentToSearchAddressFragment(address)
+                findNavController().navigate(action)
+            }
         }
         binding.tbDestination.setNavigationOnClickListener {
             findNavController().popBackStack()
@@ -121,7 +123,6 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initData()
         initClient()
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -129,5 +130,10 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         initObserver()
         initMap()
         initListener()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy: ")
     }
 }

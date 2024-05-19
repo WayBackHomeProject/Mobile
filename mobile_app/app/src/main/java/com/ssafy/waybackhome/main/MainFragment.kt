@@ -5,24 +5,28 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.ssafy.waybackhome.R
 import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
+import com.ssafy.waybackhome.destination.DestinationViewModel
 import com.ssafy.waybackhome.util.BaseFragment
 
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
 
     private val viewModel: MainViewModel by viewModels()
+    private val destinationViewModel : DestinationViewModel by navGraphViewModels(R.id.nav_graph)
 
     private lateinit var destinationAdapter : DestinationListAdapter
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var mapFragment : MapContainerFragment
 
     private fun editDestination(destination: Destination){
-        val action = MainFragmentDirections.actionMainFragmentToDestinationFragment(destination)
+        destinationViewModel.setDestination(destination)
+        val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
     private fun adjustMapSize(){

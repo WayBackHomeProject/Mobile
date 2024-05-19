@@ -7,33 +7,47 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ssafy.waybackhome.LocationViewModel
 import com.ssafy.waybackhome.R
 import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.data.geo.GeoAddress
 import com.ssafy.waybackhome.databinding.FragmentSearchAddressBinding
+import com.ssafy.waybackhome.destination.DestinationViewModel
 import com.ssafy.waybackhome.util.BaseFragment
 
 class SearchAddressFragment : BaseFragment<FragmentSearchAddressBinding>(FragmentSearchAddressBinding::inflate) {
-    private val viewModel : SearchAddressViewModel by viewModels()
-    private val locationViewModel by activityViewModels<LocationViewModel>()
+    private val searchViewModel : SearchAddressViewModel by viewModels()
+    private val locationViewModel : LocationViewModel by activityViewModels()
+    private val destinationViewModel : DestinationViewModel by navGraphViewModels(R.id.nav_graph)
     private val args : SearchAddressFragmentArgs by navArgs()
 
     private lateinit var adapter: SearchListAdapter
-    private fun openDestinationPage(address : GeoAddress){
+    private fun makeNewDestination(address: GeoAddress){
         val destination = Destination(
             address = address.jibunAddress,
             road = address.roadAddress,
             lat = address.lat.toDouble(),
             lng = address.lon.toDouble(),
         )
-        val action = SearchAddressFragmentDirections.actionSearchAddressFragmentToDestinationFragment(destination)
+        destinationViewModel.setDestination(destination)
+    }
+    private fun editExistingDestination(address: GeoAddress){
+        destinationViewModel.changeAddress(address)
+    }
+    private fun openDestinationPage(address : GeoAddress){
+        if(args.address.isNullOrBlank() || !destinationViewModel.destination.isInitialized){
+            makeNewDestination(address)
+        } else {
+            editExistingDestination(address)
+        }
+        val action = SearchAddressFragmentDirections.actionSearchAddressFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
     private fun searchWith(keyword : String?) : Boolean{
         if(!keyword.isNullOrEmpty() && locationViewModel.currentLocation.value != null){
-            viewModel.search(keyword, locationViewModel.currentLocation.value!!)
+            searchViewModel.search(keyword, locationViewModel.currentLocation.value!!)
             return true
         }
         return false;
@@ -50,7 +64,7 @@ class SearchAddressFragment : BaseFragment<FragmentSearchAddressBinding>(Fragmen
         binding.rvSearchResult.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
     }
     private fun initObserver(){
-        viewModel.addressList.observe(viewLifecycleOwner){list ->
+        searchViewModel.addressList.observe(viewLifecycleOwner){ list ->
             adapter.submitList(list)
         }
     }
@@ -59,7 +73,7 @@ class SearchAddressFragment : BaseFragment<FragmentSearchAddressBinding>(Fragmen
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchWith(query)
                 if(!query.isNullOrEmpty() && locationViewModel.currentLocation.value != null){
-                    viewModel.search(query, locationViewModel.currentLocation.value!!)
+                    searchViewModel.search(query, locationViewModel.currentLocation.value!!)
                     return true
                 }
                 return false
