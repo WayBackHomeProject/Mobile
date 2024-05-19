@@ -83,6 +83,9 @@ class SearchAddressFragment : BaseFragment<FragmentSearchAddressBinding>(Fragmen
                 return false
             }
         })
+        binding.tbDestination.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
