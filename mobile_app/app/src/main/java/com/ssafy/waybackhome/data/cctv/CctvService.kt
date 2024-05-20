@@ -13,8 +13,8 @@ interface CctvService {
     ) : CctvData
 
     companion object{
-        val api by lazy{
-            ApplicationClass.serverAPI.create(CctvData::class.java)
+        val api  by lazy{
+            ApplicationClass.serverAPI.create(CctvService::class.java)
         }
     }
 }
