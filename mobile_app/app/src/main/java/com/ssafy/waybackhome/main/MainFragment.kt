@@ -1,13 +1,10 @@
 package com.ssafy.waybackhome.main
 
-import ARG_PADDING
-import MapContainerFragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
@@ -86,7 +83,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun adjustMapSize(){
         val totalHeight = binding.root.height
         val bottomSheetTop = binding.mainBottomSheet.top
-        naverMap.setContentPadding(0, 0, 0, totalHeight-bottomSheetTop, true)
+        naverMap.setContentPadding(0, 100, 0, totalHeight-bottomSheetTop, true)
     }
     private fun addCircle() {
         val circle = CircleOverlay()
@@ -103,10 +100,25 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         marker.height = 30
         marker.map = naverMap
     }
-    private fun onLocationChange(location : Location){
+    private fun loadMarkerData(location: LatLng){
+        viewModel.getCctvData(location, 0.5)
+    }
+    private fun onLocationChange(location: LatLng){
+
+        loadMarkerData(location)
+
+        // 목적지 목록 거리순 갱신
+        val sorted = viewModel.destinations.value?.sortedBy {
+            val latLng = LatLng(it.lat, it.lng)
+            val dist = latLng.distanceTo(location)
+            dist
+        }
+        if(sorted != null) destinationAdapter.submitList(sorted)
+    }
+    private fun onSetCurrentLocation(location : Location){
         val currentLocation = LatLng(location.latitude, location.longitude)
         naverMap.locationOverlay.position = currentLocation
-        naverMap.moveCamera(CameraUpdate.toCameraPosition(CameraPosition(currentLocation, 16.0)))
+
         // 현재 위치 설정
         locationViewModel.setLocation(currentLocation)
 
@@ -121,7 +133,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
-                    onLocationChange(location)
+                    onSetCurrentLocation(location)
                 } else {
                     Toast.makeText(context, "위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
                 }
@@ -130,6 +142,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 Toast.makeText(context, "위치를 가져오는 데 실패했습니다: $e", Toast.LENGTH_SHORT).show()
             }
     }
+
     private fun initView(){
         destinationAdapter = DestinationListAdapter(requireContext(), locationViewModel.currentLocation)
         destinationAdapter.setOnItemClickListener{dest ->
@@ -171,27 +184,36 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
         // 위치에 따른 목적지 목록 순서 갱신
         locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
-            val sorted = viewModel.destinations.value?.sortedBy {
-                val latLng = LatLng(it.lat, it.lng)
-                val dist = latLng.distanceTo(location)
-                dist
-            }
-            if(sorted != null) destinationAdapter.submitList(sorted)
+            onLocationChange(location)
         }
     }
     private fun initListener(){
         binding.btnAddDest.setOnClickListener{
             openSearch()
         }
-        binding.cgMain.setOnCheckedStateChangeListener { group, checkedIds ->
-            checkedIds.forEach {id ->
-                when(id){
-                    R.id.chip_cctv -> Toast.makeText(requireContext(), "CCTV", Toast.LENGTH_SHORT).show()
-                    R.id.chip_lamp -> Toast.makeText(requireContext(), "Lamp", Toast.LENGTH_SHORT).show()
-                    R.id.chip_police -> Toast.makeText(requireContext(), "Police", Toast.LENGTH_SHORT).show()
-                    R.id.chip_store -> Toast.makeText(requireContext(), "Store", Toast.LENGTH_SHORT).show()
-                }
+    }
+    private fun initPostMapReadyObserver(){
+        viewModel.cctvs.observe(viewLifecycleOwner){cctvList ->
+            viewModel.cctvMarkers.clear()
+            cctvList.forEach {cctv->
+                val markerPosition = LatLng(cctv.latitude, cctv.longitude)
+                val marker = Marker()
+                marker.position = markerPosition
+                marker.width = 30
+                marker.height = 30
+                marker.map = if(binding.chipCctv.isChecked) naverMap else null
+                viewModel.cctvMarkers.add(marker)
             }
+        }
+        locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
+            // 카메라 현재 위치로 이동
+            naverMap.moveCamera(CameraUpdate.toCameraPosition(CameraPosition(location, 16.0)))
+        }
+    }
+    // 맵 초기화 이후에 활성화되는 리스너
+    private fun initPostMapReadyListener(){
+        binding.chipCctv.setOnCheckedChangeListener { buttonView, isChecked ->
+            viewModel.setCctvMarkerVisibility(if(isChecked) naverMap else null)
         }
     }
     private fun initPermissionEventListener(){
@@ -236,6 +258,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         if(permissionChecker.checkPermission(requireContext(), PERMISSIONS)){
             enableLocationTracking()
         }
+
+        initPostMapReadyListener()
+        initPostMapReadyObserver()
+
         addMarker()
         addCircle()
     }

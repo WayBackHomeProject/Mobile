@@ -6,22 +6,54 @@
     android:layout_height="match_parent">
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_map_options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-
-    </androidx.recyclerview.widget.RecyclerView>
-
     <FrameLayout
         android:id="@+id/map_container_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cg_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            app:singleSelection="false">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_police"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="경찰서" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_store"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="편의점" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_lamp"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="가로등" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_cctv"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CCTV" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
 
     <LinearLayout
         android:id="@+id/main_bottom_sheet"

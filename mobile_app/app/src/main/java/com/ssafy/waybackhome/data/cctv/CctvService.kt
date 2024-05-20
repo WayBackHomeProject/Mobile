@@ -5,12 +5,17 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface CctvService {
-    @GET("data_api/coordinates_in_radius/")
+    /**
+     * @param lat 검색 중심 위도
+     * @param lng 검색 중심 경도
+     * @param radius 검색 반경 (단위:km)
+     */
+    @GET("cctv_in_radius/")
     suspend fun getCctv(
         @Query("lat") lat : Double,
         @Query("lng") lng : Double,
         @Query("radius_km") radius : Double
-    ) : CctvData
+    ) : List<CctvData>
 
     companion object{
         val api  by lazy{

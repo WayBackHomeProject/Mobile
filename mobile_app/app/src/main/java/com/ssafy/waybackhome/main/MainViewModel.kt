@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.overlay.Marker
 import com.ssafy.waybackhome.data.LocalRepository
 import com.ssafy.waybackhome.data.cctv.CctvData
 import com.ssafy.waybackhome.data.cctv.CctvService
@@ -24,9 +26,29 @@ class MainViewModel : ViewModel() {
 
     private var _cctvs = MutableLiveData<List<CctvData>>()
     val cctvs : LiveData<List<CctvData>> get() = _cctvs
-    fun getCctvDatas(location : LatLng, radius : Double){
+
+    /**
+     * @param location 검색 중심 좌표
+     * @param radius 검색 반경 (단위:km)
+     */
+    fun getCctvData(location : LatLng, radius : Double){
         viewModelScope.launch {
-            CctvService.api.getCctv(location.latitude, location.longitude, radius)
+            try{
+                val list = CctvService.api.getCctv(location.latitude, location.longitude, radius)
+                _cctvs.value = list
+            } catch(e : Exception) {
+                _cctvs.value = listOf()
+            }
+        }
+    }
+    var cctvMarkers = mutableListOf<Marker>()
+
+    /**
+     * @param naverMap naverMap : Visible / null : Invisible
+     */
+    fun setCctvMarkerVisibility(naverMap: NaverMap?){
+        cctvMarkers.forEach {marker ->
+            marker.map = naverMap
         }
     }
 }
