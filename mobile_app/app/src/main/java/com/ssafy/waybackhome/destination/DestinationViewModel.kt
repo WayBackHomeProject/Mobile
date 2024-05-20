@@ -44,6 +44,11 @@ class DestinationViewModel : ViewModel() {
             repo.updateDestination(destination)
         }
     }
+    fun deleteDestination(destination: Destination){
+        viewModelScope.launch {
+            repo.deleteDestination(destination)
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()

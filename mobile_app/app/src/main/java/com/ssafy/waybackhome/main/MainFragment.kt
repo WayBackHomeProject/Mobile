@@ -35,15 +35,21 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
+    private fun deleteDestination(destination: Destination){
+        destinationViewModel.deleteDestination(destination)
+    }
     private fun adjustMapSize(){
         val totalHeight = binding.root.height
         val bottomSheetTop = binding.mainBottomSheet.top
         mapFragment.changeBottomPadding(totalHeight-bottomSheetTop)
     }
     private fun initView(){
-        destinationAdapter = DestinationListAdapter(locationViewModel.currentLocation)
+        destinationAdapter = DestinationListAdapter(requireContext(), locationViewModel.currentLocation)
         destinationAdapter.setOnItemClickListener{dest ->
             editDestination(dest)
+        }
+        destinationAdapter.setOnItemOptionsClickListener{dest->
+            deleteDestination(dest)
         }
         binding.rvDestinations.adapter = destinationAdapter
         binding.rvDestinations.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
