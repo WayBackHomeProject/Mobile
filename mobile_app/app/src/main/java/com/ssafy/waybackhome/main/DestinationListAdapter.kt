@@ -3,26 +3,25 @@ package com.ssafy.waybackhome.main
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.naver.maps.geometry.LatLng
-import com.ssafy.waybackhome.R
 import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.ListItemDestinationBinding
 import com.ssafy.waybackhome.util.OnItemClickListener
+import com.ssafy.waybackhome.util.OnItemOptionsClickListener
 
 class DestinationListAdapter(private val context : Context, private val location : LiveData<LatLng>) : ListAdapter<Destination, DestinationListAdapter.DestinationViewHolder>(DestinationComparator) {
 
     private var onItemClickListener : OnItemClickListener<Destination>? = null
-    private var onItemOptionsClickListener : OnItemClickListener<Destination>? = null
+    private var onItemOptionsClickListener : OnItemOptionsClickListener<Destination>? = null
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener<Destination>){
         this.onItemClickListener = onItemClickListener
     }
-    fun setOnItemOptionsClickListener(onItemOptionsClickListener: OnItemClickListener<Destination>){
+    fun setOnItemOptionsClickListener(onItemOptionsClickListener: OnItemOptionsClickListener<Destination>){
         this.onItemOptionsClickListener = onItemOptionsClickListener
     }
     inner class DestinationViewHolder(private val binding: ListItemDestinationBinding) : ViewHolder(binding.root){
@@ -36,16 +35,7 @@ class DestinationListAdapter(private val context : Context, private val location
                 onItemClickListener?.onClick(item)
             }
             binding.btnListItemMore.setOnClickListener {
-                PopupMenu(context, binding.btnListItemMore).apply {
-                    setOnMenuItemClickListener {
-                        when(it.itemId){
-                            R.id.menu_delete -> onItemOptionsClickListener?.onClick(item)
-                        }
-                        true
-                    }
-                    inflate(R.menu.menu_delete)
-                    show()
-                }
+                onItemOptionsClickListener?.onClick(item, it)
             }
         }
         fun updateDistance(location : LatLng){
