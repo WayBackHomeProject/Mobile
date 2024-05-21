@@ -3,9 +3,12 @@ package com.ssafy.waybackhome.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -17,6 +20,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
@@ -25,24 +29,33 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.ssafy.waybackhome.BuildConfig
 import com.ssafy.waybackhome.LocationViewModel
 import com.ssafy.waybackhome.R
 import com.ssafy.waybackhome.data.Destination
+import com.ssafy.waybackhome.data.alarmbell.AlarmBellData
+import com.ssafy.waybackhome.data.cctv.CctvData
+import com.ssafy.waybackhome.data.police.PoliceStationData
+import com.ssafy.waybackhome.data.store.StoreData
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
 import com.ssafy.waybackhome.destination.DestinationViewModel
 import com.ssafy.waybackhome.permission.PermissionChecker
 import com.ssafy.waybackhome.util.BaseFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
-private const val TAG = "MainFragment"
+private const val TAG = "MainFragment_싸피"
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate),
     OnMapReadyCallback {
 
     // ViewModels
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel : MainViewModel by viewModels()
     private val locationViewModel : LocationViewModel by activityViewModels()
     private val destinationViewModel : DestinationViewModel by navGraphViewModels(R.id.nav_graph)
 
@@ -77,10 +90,45 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
+    private fun makeNewDestination(address: Address){
+        val destination = Destination(
+            address = "${address.adminArea} ${address.locality} ${address.thoroughfare} ${address.featureName}",
+            road = "${address.adminArea} ${address.locality} ${address.thoroughfare} ${address.featureName}",
+            lat = address.latitude,
+            lng = address.longitude
+        )
+        destinationViewModel.setDestination(destination)
+        val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
+        findNavController().navigate(action)
+    }
     private fun deleteDestination(destination: Destination){
         destinationViewModel.deleteDestination(destination)
     }
-
+    private fun moveCameraTo(location: LatLng){
+        val cameraMove = CameraUpdate.scrollTo(location).animate(
+            if(locationViewModel.distanceTo(location) > 1_000) CameraAnimation.Fly else CameraAnimation.Easing
+        )
+        naverMap.moveCamera(cameraMove)
+    }
+    private fun markSelectedLocation(location: LatLng){
+        CoroutineScope(Dispatchers.Main).launch {
+            val address = Geocoder(requireContext(), Locale.KOREA).getFromLocation(location.latitude, location.longitude,1)?.first()
+            if(address != null && address.thoroughfare != null){
+                viewModel.clearAddressMarker()
+                val marker = Marker().apply {
+                    position = location
+                    width = 60
+                    height = 70
+                    captionText = "${address.thoroughfare} ${address.featureName}"
+                    icon = OverlayImage.fromResource(R.drawable.baseline_edit_location_alt_24)
+                    iconTintColor = Color.GREEN
+                    map = naverMap
+                }
+                viewModel.setAddressMarker(marker)
+                moveCameraTo(location)
+            }
+        }
+    }
     /**
      * BottomSheet 사이즈에 따른 Map 사이즈 조절
      */
@@ -89,25 +137,76 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         val bottomSheetTop = binding.mainBottomSheet.top
         naverMap.setContentPadding(0, 100, 0, totalHeight-bottomSheetTop, true)
     }
-    private fun addCircle() {
-        val circle = CircleOverlay()
-        circle.center = LatLng(36.104704, 128.419193)
-        circle.radius = 50.0
-        circle.color = Color.argb(77, 0, 191, 255)
-        circle.map = naverMap
-    }
-    private fun addMarker() {
-        val markerPosition = LatLng(36.104704, 128.419193)
-        val marker = Marker()
-        marker.position = markerPosition
-        marker.width = 30
-        marker.height = 30
-        marker.map = naverMap
-    }
     private fun loadMarkerData(location: LatLng){
-        viewModel.getCctvData(location, 0.5)
+        viewModel.getAllData(location, 2.0)
     }
-
+    private fun setCctvMarker(cctvList : List<CctvData>){
+        viewModel.clearCctvMarkers()
+        cctvList.forEach {cctv->
+            val markerPosition = LatLng(cctv.latitude, cctv.longitude)
+            val marker = Marker().apply {
+                position = markerPosition
+                width = 30
+                height = 30
+                icon = OverlayImage.fromResource(R.drawable.baseline_edit_location_alt_24)
+                iconTintColor = Color.RED
+                map = if(binding.chipCctv.isChecked) naverMap else null
+            }
+            viewModel.addToCctvMarkers(marker)
+        }
+    }
+    private fun setPoliceStationMarker(stationList : List<PoliceStationData>){
+        viewModel.clearPoliceStationMarkers()
+        stationList.forEach { station->
+            val markerPosition = LatLng(station.lat, station.lng)
+            val marker = Marker().apply {
+                position = markerPosition
+                width = 30
+                height = 30
+                map = if(binding.chipPolice.isChecked) naverMap else null
+            }
+            viewModel.addToPoliceStationMarkers(marker)
+        }
+    }
+    private fun setAlarmBellMarker(alarmBellList : List<AlarmBellData>){
+        viewModel.clearAlarmBellMarkers()
+        alarmBellList.forEach { bell->
+            val markerPosition = LatLng(bell.lat, bell.lng)
+            val marker = Marker().apply {
+                position = markerPosition
+                width = 30
+                height = 30
+                map = if(binding.chipLamp.isChecked) naverMap else null
+            }
+            viewModel.addToAlarmBellMarkers(marker)
+        }
+    }
+    private fun setStoreMarkers(storeList : List<StoreData>){
+        viewModel.clearStoreMarkers()
+        storeList.forEach { store->
+            val markerPosition = LatLng(store.lat, store.lng)
+            val marker = Marker().apply {
+                position = markerPosition
+                width = 30
+                height = 30
+                map = if(binding.chipStore.isChecked) naverMap else null
+            }
+            viewModel.addToStoreMarkers(marker)
+        }
+    }
+    private fun setDestinationMarkers(destinations: List<Destination>){
+        viewModel.clearDestinationMarkers()
+        destinations.forEach { destination->
+            val markerPosition = LatLng(destination.lat, destination.lng)
+            val marker = Marker().apply {
+                position = markerPosition
+                width = 50
+                height = 60
+                map = naverMap
+            }
+            viewModel.addToDestinationMarkers(marker)
+        }
+    }
     /**
      * 위치 변경 시
      */
@@ -158,10 +257,20 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun initView(){
         destinationAdapter = DestinationListAdapter(requireContext(), locationViewModel.currentLocation)
         destinationAdapter.setOnItemClickListener{dest ->
-            editDestination(dest)
+            moveCameraTo(LatLng(dest.lat, dest.lng))
         }
-        destinationAdapter.setOnItemOptionsClickListener{dest->
-            deleteDestination(dest)
+        destinationAdapter.setOnItemOptionsClickListener{dest, anchor->
+            PopupMenu(context, anchor).apply {
+                setOnMenuItemClickListener {
+                    when(it.itemId){
+                        R.id.menu_delete -> deleteDestination(dest)
+                        R.id.menu_edit -> editDestination(dest)
+                    }
+                    true
+                }
+                inflate(R.menu.menu_delete)
+                show()
+            }
         }
         binding.rvDestinations.adapter = destinationAdapter
         binding.rvDestinations.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -212,26 +321,49 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     // naverMap 객체에 의존적
     private fun initPostMapReadyObserver(){
         viewModel.cctvs.observe(viewLifecycleOwner){cctvList ->
-            viewModel.cctvMarkers.clear()
-            cctvList.forEach {cctv->
-                val markerPosition = LatLng(cctv.latitude, cctv.longitude)
-                val marker = Marker()
-                marker.position = markerPosition
-                marker.width = 30
-                marker.height = 30
-                marker.map = if(binding.chipCctv.isChecked) naverMap else null
-                viewModel.cctvMarkers.add(marker)
-            }
+            setCctvMarker(cctvList)
+        }
+        viewModel.policeStations.observe(viewLifecycleOwner){stations->
+            setPoliceStationMarker(stations)
+        }
+        viewModel.alarmBells.observe(viewLifecycleOwner){ bells ->
+            setAlarmBellMarker(bells)
+        }
+        viewModel.stores.observe(viewLifecycleOwner){ stores ->
+            setStoreMarkers(stores)
         }
         locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
             // 카메라 현재 위치로 이동
             naverMap.moveCamera(CameraUpdate.toCameraPosition(CameraPosition(location, 16.0)))
+        }
+        viewModel.destinations.observe(viewLifecycleOwner){destinations ->
+            setDestinationMarkers(destinations)
         }
     }
     // 맵 초기화 이후에 활성화되는 리스너
     private fun initPostMapReadyListener(){
         binding.chipCctv.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.setCctvMarkerVisibility(if(isChecked) naverMap else null)
+        }
+        binding.chipLamp.setOnCheckedChangeListener { buttonView, isChecked ->
+            viewModel.setAlarmBellMarkerVisibility(if(isChecked) naverMap else null)
+        }
+        binding.chipPolice.setOnCheckedChangeListener { buttonView, isChecked ->
+            viewModel.setPoliceStationMarkerVisibility(if(isChecked) naverMap else null)
+        }
+        binding.chipStore.setOnCheckedChangeListener { buttonView, isChecked ->
+            viewModel.setStoreMarkerVisibility(if(isChecked) naverMap else null)
+        }
+        naverMap.addOnCameraChangeListener { reason, animated ->
+            //Log.d(TAG, "initPostMapReadyListener: ${naverMap.cameraPosition.zoom}")
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            false
+        }
+        naverMap.setOnMapClickListener { pointF, latLng ->
+            viewModel.clearAddressMarker()
+        }
+        naverMap.setOnMapLongClickListener { pointF, latLng ->
+            markSelectedLocation(latLng)
         }
     }
     private fun initPermissionEventListener(){
@@ -279,9 +411,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
         initPostMapReadyListener()
         initPostMapReadyObserver()
-
-        addMarker()
-        addCircle()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
