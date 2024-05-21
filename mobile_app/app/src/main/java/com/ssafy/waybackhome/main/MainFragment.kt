@@ -34,6 +34,7 @@ import com.ssafy.waybackhome.R
 import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
 import com.ssafy.waybackhome.destination.DestinationViewModel
+import com.ssafy.waybackhome.dialog.ProfileDialog
 import com.ssafy.waybackhome.permission.PermissionChecker
 import com.ssafy.waybackhome.util.BaseFragment
 
@@ -206,6 +207,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun initListener(){
         binding.btnAddDest.setOnClickListener{
             openSearch()
+        }
+        binding.mainFragFab.setOnClickListener{
+            ProfileDialog(requireContext()).show()
         }
     }
     // 맵 초기화 이후에 활성화되는 관찰자
