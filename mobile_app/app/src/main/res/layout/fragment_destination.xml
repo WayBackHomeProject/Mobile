@@ -11,7 +11,6 @@
         android:id="@+id/tb_destination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,26 +23,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="horizontal"
             tools:layout_editor_absoluteX="56dp"
             tools:layout_editor_absoluteY="20dp">
 
+            <TextView
+                android:text="🚩 "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
             <TextView
                 android:id="@+id/tv_destination_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="title"
                 android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 tools:layout_editor_absoluteX="56dp"
                 tools:layout_editor_absoluteY="22dp" />
 
-            <ImageView
-                android:id="@+id/btn_edit_destination"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/baseline_edit_location_alt_24" />
         </LinearLayout>
 
 
@@ -85,7 +82,7 @@
                 android:id="@+id/et_destination_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="hint" />
+                android:hint="목적지 별명" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -95,7 +92,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Button"
+            android:text="등록"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

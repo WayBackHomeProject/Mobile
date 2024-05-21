@@ -70,7 +70,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
         binding.tbDestination.setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
         binding.tvDestinationTitle.text = destination.address
         binding.etDestinationName.setText(destination.name)
-        binding.btnEditDestination.visibility = if(destinationViewModel.destination.value?.name.isNullOrBlank()) View.GONE else View.VISIBLE
+//        binding.btnEditDestination.visibility = if(destinationViewModel.destination.value?.name.isNullOrBlank()) View.GONE else View.VISIBLE
     }
     private fun initListener(){
         binding.btnDestinationConfirm.setOnClickListener{
@@ -90,7 +90,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
             }
             false
         }
-        binding.btnEditDestination.setOnClickListener {
+        binding.tvDestinationTitle.setOnClickListener {
             destinationViewModel.destination.value?.run {
                 val action = DestinationFragmentDirections.actionDestinationFragmentToSearchAddressFragment(address)
                 findNavController().navigate(action)
