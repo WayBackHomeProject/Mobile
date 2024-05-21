@@ -29,6 +29,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
@@ -167,17 +168,27 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
     private fun setCctvMarker(cctvList : List<CctvData>){
         viewModel.clearCctvMarkers()
+
         cctvList.forEach {cctv->
             val markerPosition = LatLng(cctv.latitude, cctv.longitude)
             val marker = Marker().apply {
                 position = markerPosition
                 width = 30
                 height = 30
-                icon = OverlayImage.fromResource(R.drawable.baseline_edit_location_alt_24)
-                iconTintColor = Color.RED
+                icon = OverlayImage.fromResource(R.drawable.cctv)
+                map = if(binding.chipCctv.isChecked) naverMap else null
+            }
+
+            val circle = CircleOverlay().apply {
+                center = markerPosition
+                radius = 40.0
+                color = Color.argb(100,254, 254, 100)
+                outlineWidth = 1 // 테두리의 두께 설정
+                outlineColor = Color.BLACK // 테두리의 색상 설정
                 map = if(binding.chipCctv.isChecked) naverMap else null
             }
             viewModel.addToCctvMarkers(marker)
+            viewModel.addToCctvCircles(circle)
         }
     }
     private fun setPoliceStationMarker(stationList : List<PoliceStationData>){
@@ -186,8 +197,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val markerPosition = LatLng(station.lat, station.lng)
             val marker = Marker().apply {
                 position = markerPosition
-                width = 30
-                height = 30
+                width = 100
+                height = 100
+                icon = OverlayImage.fromResource(R.drawable.police)
                 map = if(binding.chipPolice.isChecked) naverMap else null
             }
             viewModel.addToPoliceStationMarkers(marker)
@@ -199,9 +211,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val markerPosition = LatLng(bell.lat, bell.lng)
             val marker = Marker().apply {
                 position = markerPosition
-                width = 30
-                height = 30
-                map = if(binding.chipLamp.isChecked) naverMap else null
+                width = 75
+                height = 75
+                icon = OverlayImage.fromResource(R.drawable.alert)
+                map = if(binding.chipPolice.isChecked) naverMap else null
             }
             viewModel.addToAlarmBellMarkers(marker)
         }
@@ -212,9 +225,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val markerPosition = LatLng(store.lat, store.lng)
             val marker = Marker().apply {
                 position = markerPosition
-                width = 30
-                height = 30
-                map = if(binding.chipStore.isChecked) naverMap else null
+                width = 75
+                height = 75
+                icon = OverlayImage.fromResource(R.drawable.conveniencestore)
+                map = if(binding.chipPolice.isChecked) naverMap else null
             }
             viewModel.addToStoreMarkers(marker)
         }
@@ -225,8 +239,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val markerPosition = LatLng(destination.lat, destination.lng)
             val marker = Marker().apply {
                 position = markerPosition
-                width = 50
-                height = 60
+                width = 100
+                height = 100
+                icon = OverlayImage.fromResource(R.drawable.flag)
                 map = naverMap
             }
             viewModel.addToDestinationMarkers(marker)
@@ -266,6 +281,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun enableLocationTracking() {
         //fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
@@ -439,7 +455,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
         naverMap.locationSource = locationSource
         naverMap.locationOverlay.isVisible = true
-
+        naverMap.uiSettings.isLocationButtonEnabled = true
         if(permissionChecker.checkPermission(requireContext(), PERMISSIONS)){
             enableLocationTracking()
         }
@@ -447,8 +463,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         initPostMapReadyListener()
         initPostMapReadyObserver()
 
-//        addMarker()
-//        addCircle()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
