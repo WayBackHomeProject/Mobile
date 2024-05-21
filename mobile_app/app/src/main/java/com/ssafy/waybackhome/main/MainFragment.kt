@@ -80,6 +80,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun deleteDestination(destination: Destination){
         destinationViewModel.deleteDestination(destination)
     }
+
+    /**
+     * BottomSheet 사이즈에 따른 Map 사이즈 조절
+     */
     private fun adjustMapSize(){
         val totalHeight = binding.root.height
         val bottomSheetTop = binding.mainBottomSheet.top
@@ -103,10 +107,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun loadMarkerData(location: LatLng){
         viewModel.getCctvData(location, 0.5)
     }
+
+    /**
+     * 위치 변경 시
+     */
     private fun onLocationChange(location: LatLng){
-
-        loadMarkerData(location)
-
         // 목적지 목록 거리순 갱신
         val sorted = viewModel.destinations.value?.sortedBy {
             val latLng = LatLng(it.lat, it.lng)
@@ -114,6 +119,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             dist
         }
         if(sorted != null) destinationAdapter.submitList(sorted)
+    }
+
+    /**
+     * 대략적인 위치 갱신 시
+     */
+    private fun onCoarseLocationChange(location: LatLng){
+        loadMarkerData(location)
     }
     private fun onSetCurrentLocation(location : Location){
         val currentLocation = LatLng(location.latitude, location.longitude)
@@ -186,12 +198,18 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
             onLocationChange(location)
         }
+        // 대략적인 위치 갱신
+        locationViewModel.coarseLocation.observe(viewLifecycleOwner){ location ->
+            onCoarseLocationChange(location)
+        }
     }
     private fun initListener(){
         binding.btnAddDest.setOnClickListener{
             openSearch()
         }
     }
+    // 맵 초기화 이후에 활성화되는 관찰자
+    // naverMap 객체에 의존적
     private fun initPostMapReadyObserver(){
         viewModel.cctvs.observe(viewLifecycleOwner){cctvList ->
             viewModel.cctvMarkers.clear()
