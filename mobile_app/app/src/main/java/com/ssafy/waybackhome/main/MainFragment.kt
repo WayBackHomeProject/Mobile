@@ -29,6 +29,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
@@ -336,6 +337,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         viewModel.stores.observe(viewLifecycleOwner){ stores ->
             setStoreMarkers(stores)
         }
+
         locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
             // 카메라 현재 위치로 이동
             naverMap.moveCamera(CameraUpdate.toCameraPosition(CameraPosition(location, 16.0)))
@@ -348,6 +350,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun initPostMapReadyListener(){
         binding.chipCctv.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.setCctvMarkerVisibility(if(isChecked) naverMap else null)
+            viewModel.setCctvCirclesVisibility(if(isChecked) naverMap else null)
         }
         binding.chipLamp.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.setAlarmBellMarkerVisibility(if(isChecked) naverMap else null)
@@ -415,6 +418,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
         initPostMapReadyListener()
         initPostMapReadyObserver()
+
+//        addMarker()
+//        addCircle()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

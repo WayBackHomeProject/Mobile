@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.ssafy.waybackhome.R
@@ -63,6 +64,7 @@ class MainViewModel : ViewModel() {
     }
     private var _cctvs = MutableLiveData<List<CctvData>>()
     val cctvs : LiveData<List<CctvData>> get() = _cctvs
+
     /**
      * @param location 검색 중심 좌표
      * @param radius 검색 반경 (단위:km)
@@ -77,12 +79,20 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+    var cctvMarkers = mutableListOf<Marker>()
+    var cctvCircles = mutableListOf<CircleOverlay>()
+
     private var _cctvMarkers = mutableListOf<Marker>()
     /**
      * @param naverMap naverMap : Visible / null : Invisible
      */
     fun setCctvMarkerVisibility(naverMap: NaverMap?){
         _cctvMarkers.forEach { marker ->
+            marker.map = naverMap
+        }
+    }
+    fun setCctvCirclesVisibility(naverMap: NaverMap?){
+        cctvCircles.forEach {marker ->
             marker.map = naverMap
         }
     }
