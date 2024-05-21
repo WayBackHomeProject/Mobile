@@ -32,4 +32,8 @@ class LocationViewModel : ViewModel() {
             _coarseLocation.value = location
         }
     }
+
+    fun distanceTo(location: LatLng) : Double{
+        return if(_currentLocation.isInitialized) _currentLocation.value!!.distanceTo(location) else 0.0
+    }
 }
