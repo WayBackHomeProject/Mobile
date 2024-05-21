@@ -35,9 +35,6 @@ class DestinationListAdapter(private val context : Context, private val location
             binding.root.setOnClickListener {
                 onItemClickListener?.onClick(item)
             }
-            binding.btnListItemMore.setOnClickListener {
-                onItemOptionsClickListener?.onClick(item, it)
-            }
         }
         fun updateDistance(location : LatLng){
             item?.run {

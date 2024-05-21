@@ -59,9 +59,10 @@
 
 
     <LinearLayout
+        style="@style/BottomSheetDefault"
         android:id="@+id/main_bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@color/white"
         android:minHeight="100dp"
         android:orientation="vertical"
@@ -73,6 +74,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <com.google.android.material.bottomsheet.BottomSheetDragHandleView
                 android:id="@+id/handle"
                 android:layout_width="match_parent"
@@ -119,17 +121,18 @@
                 app:layout_constraintTop_toBottomOf="@id/boaderline" />
 
 
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/address_bottom_sheet"
+        style="@style/BottomSheetDefault"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         app:behavior_hideable="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
@@ -148,35 +151,84 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_destination_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="TextView"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/tv_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:text="TextView"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/tv_address_distance"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+                    android:textColor="@color/grey"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_add_address"
+            <TextView
+                android:id="@+id/tv_address_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:clickable="true"
-                android:src="@drawable/baseline_add_24" />
+                android:layout_gravity="center_vertical"
+                android:text="TextView"
+                android:textColor="@color/grey"
+                android:textSize="16sp" />
 
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view"
+            style="@style/Divider"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="16dp">
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                style="@style/ButtonDefault"
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/warning"
+                android:backgroundTint="@color/warning_background"
+                android:text="목적지 삭제" />
+
+            <Button
+                style="@style/ButtonDefault"
+                android:id="@+id/btn_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="목적지 수정" />
+
+            <Button
+                style="@style/ButtonDefault"
+                android:id="@+id/btn_create"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="목적지 추가" />
         </LinearLayout>
 
     </LinearLayout>

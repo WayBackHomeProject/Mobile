@@ -50,7 +50,6 @@ import com.ssafy.waybackhome.util.formatMeter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 
 private const val TAG = "MainFragment_싸피"
@@ -93,7 +92,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
-    private fun makeNewDestination(){
+    private fun makeNewDestination(destination: Destination){
+        destinationViewModel.setDestination(destination)
         val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
@@ -106,45 +106,57 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         )
         naverMap.moveCamera(cameraMove)
     }
-    private fun markSelectedLocation(location: LatLng){
+    private fun selectLocation(location: LatLng){
         CoroutineScope(Dispatchers.Main).launch {
             val address = Geocoder(requireContext(), Locale.KOREA).getFromLocation(location.latitude, location.longitude,1)?.first()
             Log.d(TAG, "markSelectedLocation: $address")
             if(address != null && address.maxAddressLineIndex >= 0){
-                viewModel.clearAddressMarker()
-                val marker = Marker().apply {
-                    position = location
-                    width = 60
-                    height = 70
-                    captionText = address.getAddressLine(0)
-                    icon = OverlayImage.fromResource(R.drawable.baseline_edit_location_alt_24)
-                    iconTintColor = Color.GREEN
-                    map = naverMap
-                }
-                viewModel.setAddressMarker(marker)
-                moveCameraTo(location)
                 val destination = Destination(
                     address = address.getAddressLine(0),
                     road = address.getAddressLine(0),
                     lat = address.latitude,
                     lng = address.longitude
                 )
-                destinationViewModel.setDestination(destination)
-                showAddressBottomSheet(destination)
+                markSelectedDestination(destination)
             }
         }
     }
-
+    private fun markSelectedDestination(destination: Destination){
+        viewModel.clearAddressMarker()
+        val location = LatLng(destination.lat, destination.lng)
+        val marker = Marker().apply {
+            position = location
+            width = 60
+            height = 70
+            captionText = destination.address
+            icon = OverlayImage.fromResource(R.drawable.baseline_edit_location_alt_24)
+            iconTintColor = Color.GREEN
+            map = naverMap
+        }
+        viewModel.setAddressMarker(marker)
+        moveCameraTo(location)
+        viewModel.selectDestination(destination)
+        showAddressBottomSheet(destination)
+    }
     /**
      * 맵에 롱클릭 시
      */
     private fun showAddressBottomSheet(destination: Destination){
-        addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         binding.mainBottomSheet.visibility = View.GONE
+        binding.mainFragFab.visibility = View.GONE
 
+        val hasName = destination.name.isNotBlank()
+
+        binding.tvDestinationName.visibility = if(hasName) View.VISIBLE else View.GONE
+        binding.tvDestinationName.text = destination.name
         binding.tvAddress.text = destination.address
         val dist = locationViewModel.distanceTo(LatLng(destination.lat, destination.lng))
         binding.tvAddressDistance.text = dist.formatMeter()
+
+        binding.btnDelete.visibility = if(hasName) View.VISIBLE else View.GONE
+        binding.btnEdit.visibility = if(hasName) View.VISIBLE else View.GONE
+        binding.btnCreate.visibility = if(hasName) View.GONE else View.VISIBLE
+        addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
     /**
      * 화면 터치 시
@@ -154,6 +166,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         viewModel.clearAddressMarker()
         addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         binding.mainBottomSheet.visibility = View.VISIBLE
+        binding.mainFragFab.visibility = View.VISIBLE
     }
     /**
      * BottomSheet 사이즈에 따른 Map 사이즈 조절
@@ -298,7 +311,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun initView(){
         destinationAdapter = DestinationListAdapter(requireContext(), locationViewModel.currentLocation)
         destinationAdapter.setOnItemClickListener{dest ->
-            moveCameraTo(LatLng(dest.lat, dest.lng))
+            markSelectedDestination(dest)
         }
         destinationAdapter.setOnItemOptionsClickListener{dest, anchor->
             PopupMenu(context, anchor).apply {
@@ -362,8 +375,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         binding.mainFragFab.setOnClickListener{
             ProfileDialog(requireContext()).show()
         }
-        binding.btnAddAddress.setOnClickListener {
-            makeNewDestination()
+        binding.btnDelete.setOnClickListener {
+            viewModel.selectedDestination?.let { deleteDestination(it) }
+        }
+        binding.btnEdit.setOnClickListener {
+            viewModel.selectedDestination?.let { editDestination(it) }
+        }
+        binding.btnCreate.setOnClickListener {
+            viewModel.selectedDestination?.let { makeNewDestination(it) }
         }
     }
     // 맵 초기화 이후에 활성화되는 관찰자
@@ -414,7 +433,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             if(addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) hideAddressBottomSheet()
         }
         naverMap.setOnMapLongClickListener { pointF, latLng ->
-            markSelectedLocation(latLng)
+            selectLocation(latLng)
         }
     }
     private fun initPermissionEventListener(){

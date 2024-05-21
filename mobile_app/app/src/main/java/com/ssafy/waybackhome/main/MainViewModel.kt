@@ -13,6 +13,7 @@ import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.ssafy.waybackhome.R
+import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.data.LocalRepository
 import com.ssafy.waybackhome.data.alarmbell.AlarmBellData
 import com.ssafy.waybackhome.data.alarmbell.AlarmBellService
@@ -32,6 +33,11 @@ class MainViewModel : ViewModel() {
      * 로컬 DB에 저장된 목적지 정보
      */
     val destinations = repo.selectAllDestination()
+    var selectedDestination : Destination? = null
+        private set
+    fun selectDestination(destination: Destination) {
+        selectedDestination = destination
+    }
 
     var bottomSheetState : Int = BottomSheetBehavior.STATE_COLLAPSED
 
