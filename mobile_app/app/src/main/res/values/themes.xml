@@ -7,6 +7,7 @@
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorSecondary">@color/primaryShade</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <style name="Theme.WayBackHome" parent="Base.Theme.WayBackHome" />
