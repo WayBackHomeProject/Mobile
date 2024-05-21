@@ -25,32 +25,31 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_police"
-                style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="경찰서" />
+                style="@style/CustomChipChoice"
+                android:text="🚓 경찰서" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_store"
-                style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="편의점" />
+                style="@style/CustomChipChoice"
+                android:text="🏪 편의점" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_lamp"
-                style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checkable="true"
-                android:text="가로등" />
+                style="@style/CustomChipChoice"
+                android:text="🚨 비상벨" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_cctv"
-                style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CCTV" />
+                style="@style/CustomChipChoice"
+                android:text="🎥 CCTV" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
@@ -59,22 +58,25 @@
         android:id="@+id/main_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:minHeight="100dp"
         android:orientation="vertical"
         app:behavior_hideable="false"
         app:behavior_peekHeight="100dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
+<!--        <Button-->
+<!--            android:id="@+id/button"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Button" />-->
+
+
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <com.google.android.material.bottomsheet.BottomSheetDragHandleView
                 android:id="@+id/handle"
                 android:layout_width="match_parent"
@@ -83,17 +85,31 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_add_dest"
-                android:layout_width="0dp"
+                style="@style/ButtonStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Button"
+                android:background="@drawable/btn_primary_shade"
+                android:text="🚩 목적지 추가"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/handle" />
 
+            <View
+                android:id="@+id/boaderline"
+                android:background="#1f1f1f"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="4px"
+                app:layout_constraintTop_toBottomOf="@id/btn_add_dest"
+                app:layout_constraintBottom_toTopOf="@id/rv_destinations"
+
+                />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_destinations"
                 android:layout_width="0dp"
@@ -103,7 +119,10 @@
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btn_add_dest" />
+                app:layout_constraintTop_toBottomOf="@id/boaderline" />
+
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 

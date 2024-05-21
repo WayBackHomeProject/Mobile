@@ -53,6 +53,7 @@ class SearchAddressFragment : BaseFragment<FragmentSearchAddressBinding>(Fragmen
         return false;
     }
     private fun initData(){
+        binding.svAddress.setQuery(args.address, false)
         searchWith(args.address)
     }
     private fun initView(){
