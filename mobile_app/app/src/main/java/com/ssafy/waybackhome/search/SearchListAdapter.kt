@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.ssafy.waybackhome.data.geo.GeoAddress
 import com.ssafy.waybackhome.databinding.ListItemGeoAddressBinding
 import com.ssafy.waybackhome.util.OnItemClickListener
+import com.ssafy.waybackhome.util.formatMeter
 
 class SearchListAdapter : ListAdapter<GeoAddress, SearchListAdapter.SearchViewHolder>(GeoAddressComparator) {
 
@@ -21,7 +22,7 @@ class SearchListAdapter : ListAdapter<GeoAddress, SearchListAdapter.SearchViewHo
         fun bind(item : GeoAddress){
             binding.tvListItemAddress.text = item.jibunAddress
             binding.tvListItemRoad.text = item.roadAddress
-            binding.tvListItemDist.text = "${item.distance}m"
+            binding.tvListItemDist.text = item.distance.formatMeter()
             binding.root.setOnClickListener {
                 onItemClickListener?.onClick(item)
             }

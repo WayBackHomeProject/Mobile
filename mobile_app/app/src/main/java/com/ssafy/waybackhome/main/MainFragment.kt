@@ -45,6 +45,7 @@ import com.ssafy.waybackhome.destination.DestinationViewModel
 import com.ssafy.waybackhome.dialog.ProfileDialog
 import com.ssafy.waybackhome.permission.PermissionChecker
 import com.ssafy.waybackhome.util.BaseFragment
+import com.ssafy.waybackhome.util.formatMeter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -142,7 +143,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
         binding.tvAddress.text = destination.address
         val dist = locationViewModel.distanceTo(LatLng(destination.lat, destination.lng))
-        binding.tvAddressDistance.text = if(dist > 1_000) "%.1f km".format(dist/1_000) else "%.1f m".format(dist)
+        binding.tvAddressDistance.text = dist.formatMeter()
     }
     /**
      * 화면 터치 시
