@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.ssafy.waybackhome.data.LocalRepository
 import com.ssafy.waybackhome.data.cctv.CctvData
@@ -42,12 +43,18 @@ class MainViewModel : ViewModel() {
         }
     }
     var cctvMarkers = mutableListOf<Marker>()
+    var cctvCircles = mutableListOf<CircleOverlay>()
 
     /**
      * @param naverMap naverMap : Visible / null : Invisible
      */
     fun setCctvMarkerVisibility(naverMap: NaverMap?){
         cctvMarkers.forEach {marker ->
+            marker.map = naverMap
+        }
+    }
+    fun setCctvCirclesVisibility(naverMap: NaverMap?){
+        cctvCircles.forEach {marker ->
             marker.map = naverMap
         }
     }

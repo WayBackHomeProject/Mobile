@@ -27,6 +27,7 @@ import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.ssafy.waybackhome.BuildConfig
 import com.ssafy.waybackhome.LocationViewModel
@@ -215,18 +216,27 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     // 맵 초기화 이후에 활성화되는 관찰자
     // naverMap 객체에 의존적
     private fun initPostMapReadyObserver(){
-        viewModel.cctvs.observe(viewLifecycleOwner){cctvList ->
+        viewModel.cctvs.observe(viewLifecycleOwner) { cctvList ->
             viewModel.cctvMarkers.clear()
-            cctvList.forEach {cctv->
+            cctvList.forEach { cctv ->
                 val markerPosition = LatLng(cctv.latitude, cctv.longitude)
                 val marker = Marker()
                 marker.position = markerPosition
-                marker.width = 30
-                marker.height = 30
+                marker.width = 40
+                marker.height = 40
+                marker.icon = OverlayImage.fromResource(R.drawable.cctv) // 여기서 R.drawable.your_marker_icon은 마커 이미지의 리소스 ID입니다.
                 marker.map = if(binding.chipCctv.isChecked) naverMap else null
                 viewModel.cctvMarkers.add(marker)
+
+                val circle = CircleOverlay()
+                circle.center = markerPosition
+                circle.radius = 40.0
+                circle.color = Color.argb(130,254, 254, 100)
+                circle.map = if(binding.chipCctv.isChecked) naverMap else null
+                viewModel.cctvCircles.add(circle)
             }
         }
+
         locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
             // 카메라 현재 위치로 이동
             naverMap.moveCamera(CameraUpdate.toCameraPosition(CameraPosition(location, 16.0)))
@@ -236,6 +246,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun initPostMapReadyListener(){
         binding.chipCctv.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.setCctvMarkerVisibility(if(isChecked) naverMap else null)
+            viewModel.setCctvCirclesVisibility(if(isChecked) naverMap else null)
         }
     }
     private fun initPermissionEventListener(){
@@ -284,8 +295,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         initPostMapReadyListener()
         initPostMapReadyObserver()
 
-        addMarker()
-        addCircle()
+//        addMarker()
+//        addCircle()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
