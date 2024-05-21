@@ -3,10 +3,10 @@ package com.ssafy.waybackhome.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -29,7 +29,6 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
@@ -64,7 +63,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     // View Components
     private lateinit var destinationAdapter : DestinationListAdapter
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-
+    private lateinit var addressBottomSheetBehavior : BottomSheetBehavior<View>
     // Map
     private lateinit var mapFragment: MapFragment
     private lateinit var locationSource: FusedLocationSource
@@ -92,14 +91,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
-    private fun makeNewDestination(address: Address){
-        val destination = Destination(
-            address = "${address.adminArea} ${address.locality} ${address.thoroughfare} ${address.featureName}",
-            road = "${address.adminArea} ${address.locality} ${address.thoroughfare} ${address.featureName}",
-            lat = address.latitude,
-            lng = address.longitude
-        )
-        destinationViewModel.setDestination(destination)
+    private fun makeNewDestination(){
         val action = MainFragmentDirections.actionMainFragmentToDestinationFragment()
         findNavController().navigate(action)
     }
@@ -115,21 +107,51 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun markSelectedLocation(location: LatLng){
         CoroutineScope(Dispatchers.Main).launch {
             val address = Geocoder(requireContext(), Locale.KOREA).getFromLocation(location.latitude, location.longitude,1)?.first()
-            if(address != null && address.thoroughfare != null){
+            Log.d(TAG, "markSelectedLocation: $address")
+            if(address != null && address.maxAddressLineIndex >= 0){
                 viewModel.clearAddressMarker()
                 val marker = Marker().apply {
                     position = location
                     width = 60
                     height = 70
-                    captionText = "${address.thoroughfare} ${address.featureName}"
+                    captionText = address.getAddressLine(0)
                     icon = OverlayImage.fromResource(R.drawable.baseline_edit_location_alt_24)
                     iconTintColor = Color.GREEN
                     map = naverMap
                 }
                 viewModel.setAddressMarker(marker)
                 moveCameraTo(location)
+                val destination = Destination(
+                    address = address.getAddressLine(0),
+                    road = address.getAddressLine(0),
+                    lat = address.latitude,
+                    lng = address.longitude
+                )
+                destinationViewModel.setDestination(destination)
+                showAddressBottomSheet(destination)
             }
         }
+    }
+
+    /**
+     * 맵에 롱클릭 시
+     */
+    private fun showAddressBottomSheet(destination: Destination){
+        addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        binding.mainBottomSheet.visibility = View.GONE
+
+        binding.tvAddress.text = destination.address
+        val dist = locationViewModel.distanceTo(LatLng(destination.lat, destination.lng))
+        binding.tvAddressDistance.text = if(dist > 1_000) "%.1f km".format(dist/1_000) else "%.1f m".format(dist)
+    }
+    /**
+     * 화면 터치 시
+     * back 버튼 눌렀을 시
+     */
+    private fun hideAddressBottomSheet(){
+        viewModel.clearAddressMarker()
+        addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        binding.mainBottomSheet.visibility = View.VISIBLE
     }
     /**
      * BottomSheet 사이즈에 따른 Map 사이즈 조절
@@ -294,6 +316,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 }
             }
         })
+        addressBottomSheetBehavior = BottomSheetBehavior.from(binding.addressBottomSheet)
+        addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
     private fun initObserver(){
         // 목적지 목록 갱신
@@ -320,6 +344,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
         binding.mainFragFab.setOnClickListener{
             ProfileDialog(requireContext()).show()
+        }
+        binding.btnAddAddress.setOnClickListener {
+            makeNewDestination()
         }
     }
     // 맵 초기화 이후에 활성화되는 관찰자
@@ -367,7 +394,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             false
         }
         naverMap.setOnMapClickListener { pointF, latLng ->
-            viewModel.clearAddressMarker()
+            if(addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) hideAddressBottomSheet()
         }
         naverMap.setOnMapLongClickListener { pointF, latLng ->
             markSelectedLocation(latLng)
