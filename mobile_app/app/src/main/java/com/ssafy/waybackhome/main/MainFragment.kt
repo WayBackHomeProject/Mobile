@@ -42,6 +42,7 @@ import com.ssafy.waybackhome.data.police.PoliceStationData
 import com.ssafy.waybackhome.data.store.StoreData
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
 import com.ssafy.waybackhome.destination.DestinationViewModel
+import com.ssafy.waybackhome.dialog.ProfileDialog
 import com.ssafy.waybackhome.permission.PermissionChecker
 import com.ssafy.waybackhome.util.BaseFragment
 import kotlinx.coroutines.CoroutineScope
@@ -315,6 +316,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun initListener(){
         binding.btnAddDest.setOnClickListener{
             openSearch()
+        }
+        binding.mainFragFab.setOnClickListener{
+            ProfileDialog(requireContext()).show()
         }
     }
     // 맵 초기화 이후에 활성화되는 관찰자

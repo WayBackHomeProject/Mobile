@@ -9,9 +9,12 @@
     <FrameLayout
         android:id="@+id/map_container_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+
+    </FrameLayout>
 
     <HorizontalScrollView
+        android:id="@+id/main_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none">
@@ -51,9 +54,8 @@
                 style="@style/CustomChipChoice"
                 android:text="🎥 CCTV" />
         </com.google.android.material.chip.ChipGroup>
+
     </HorizontalScrollView>
-
-
     <LinearLayout
         android:id="@+id/main_bottom_sheet"
         android:layout_width="match_parent"
@@ -65,18 +67,11 @@
         app:behavior_peekHeight="100dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-<!--        <Button-->
-<!--            android:id="@+id/button"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Button" />-->
-
-
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <com.google.android.material.bottomsheet.BottomSheetDragHandleView
                 android:id="@+id/handle"
                 android:layout_width="match_parent"
@@ -123,7 +118,29 @@
 
 
 
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
+    <!-- Floating Action Button 추가 -->
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        app:layout_anchor="@id/main_bottom_sheet"
+        app:layout_anchorGravity="end"
+        >
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/main_frag_fab"
+            android:backgroundTint="@color/primaryShade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/question_mark"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="40dp"
+            app:tint="@color/white"
+            />
+    </LinearLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
