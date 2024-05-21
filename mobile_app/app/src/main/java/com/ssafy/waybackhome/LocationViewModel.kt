@@ -8,14 +8,28 @@ import com.naver.maps.geometry.LatLng
 class LocationViewModel : ViewModel() {
 
     private val _currentLocation = MutableLiveData<LatLng>()
+
+    /**
+     * 현재 위치
+     */
     val currentLocation : LiveData<LatLng> get() = _currentLocation
 
-    var state = MutableLiveData<Boolean>()
+    private val _coarseLocation = MutableLiveData<LatLng>()
 
+    /**
+     * 대략적인 위치 (50m 마다 위치 갱신)
+     */
+    val coarseLocation : LiveData<LatLng> get() = _coarseLocation
+
+    /**
+     * 현재 위치 변경.
+     * 대략적인 위치는 이전 위치로부터 50m 이상 차이가 날 때만 갱신
+     */
     fun setLocation(location : LatLng){
         _currentLocation.value = location
-    }
-    fun setLocation(lat : Double, lon : Double){
-        _currentLocation.value = LatLng(lat, lon)
+
+        if(!_coarseLocation.isInitialized || _coarseLocation.value!!.distanceTo(location) > 50){
+            _coarseLocation.value = location
+        }
     }
 }
