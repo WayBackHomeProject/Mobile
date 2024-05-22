@@ -1,35 +1,19 @@
 package com.ssafy.waybackhome.dialog
 
 import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import com.ssafy.waybackhome.databinding.FragmentProfileDialogBinding
+import com.ssafy.waybackhome.databinding.DialogFragmentProfileBinding
+import com.ssafy.waybackhome.util.BaseDialogFragment
 
-class ProfileDialogFragment : DialogFragment() {
-    private var _binding: FragmentProfileDialogBinding? = null
-    private val binding get() = _binding!!
+class ProfileDialogFragment : BaseDialogFragment<DialogFragmentProfileBinding>(DialogFragmentProfileBinding::inflate) {
 
     private var isLoading = true
     private val viewModel: DialogViewModel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentProfileDialogBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         initViews()
         initObserver()
     }
@@ -69,10 +53,5 @@ class ProfileDialogFragment : DialogFragment() {
                 dialogMainTv.visibility = View.VISIBLE
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

@@ -47,6 +47,7 @@ import com.ssafy.waybackhome.data.police.PoliceStationData
 import com.ssafy.waybackhome.data.store.StoreData
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
 import com.ssafy.waybackhome.destination.DestinationViewModel
+import com.ssafy.waybackhome.dialog.DistanceDialogFragment
 import com.ssafy.waybackhome.dialog.ProfileDialogFragment
 import com.ssafy.waybackhome.permission.PermissionChecker
 import com.ssafy.waybackhome.util.BaseFragment
@@ -90,6 +91,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun showPermissionRequestDialog(){
         permissionChecker.moveToSettings()
         //Toast.makeText(requireContext(), "rejected", Toast.LENGTH_SHORT).show()
+    }
+    private fun showProfileDialog() {
+        ProfileDialogFragment().show(childFragmentManager, "ProfileDialogFragment")
+    }
+    private fun showDistanceDialog(){
+        DistanceDialogFragment().show(childFragmentManager, "Distance")
     }
     private fun openSearch(){
         val action = MainFragmentDirections.actionMainFragmentToSearchAddressFragment(null)
@@ -426,8 +433,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             openSearch()
         }
         binding.mainFragFab.setOnClickListener{
-//            ProfileDialog(requireContext()).show()
-            ProfileDialogFragment().show(childFragmentManager, "ProfileDialogFragment")
+            showProfileDialog()
         }
         binding.btnDelete.setOnClickListener {
             viewModel.selectedDestination?.let { deleteDestination(it) }
@@ -438,8 +444,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         binding.btnCreate.setOnClickListener {
             viewModel.selectedDestination?.let { makeNewDestination(it) }
         }
+        binding.btnDistance.setOnClickListener {
+            showDistanceDialog()
+        }
         addBackButtonEvent()
     }
+
+
+
     // 맵 초기화 이후에 활성화되는 관찰자
     // naverMap 객체에 의존적
     private fun initPostMapReadyObserver(){
