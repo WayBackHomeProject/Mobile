@@ -228,9 +228,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 width = 30
                 height = 30
                 icon = OverlayImage.fromResource(R.drawable.cctv)
+                captionText = cctv.purpose
+                captionTextSize = 8.0f
                 map = if(binding.chipCctv.isChecked) naverMap else null
             }
-
+            marker.setOnClickListener {
+                val coordinates = cctv.roadAddress
+                Toast.makeText(requireContext(), coordinates, Toast.LENGTH_SHORT).show()
+                true  // 이벤트 처리를 완료했다는 의미로 true 반환
+            }
 
             val circle = CircleOverlay().apply {
                 center = markerPosition
@@ -253,8 +259,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 width = 100
                 height = 100
                 icon = OverlayImage.fromResource(R.drawable.police)
+                captionText = station.department + station.type
+                captionTextSize = 10.0f
                 map = if(binding.chipPolice.isChecked) naverMap else null
             }
+            marker.setOnClickListener {
+                val stationTelNo = "전화번호 : " + station.tel
+                Toast.makeText(requireContext(), stationTelNo, Toast.LENGTH_SHORT).show()
+                true  // 이벤트 처리를 완료했다는 의미로 true 반환
+            }
+
             viewModel.addToPoliceStationMarkers(marker)
         }
     }
@@ -283,6 +297,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 icon = OverlayImage.fromResource(R.drawable.conveniencestore)
                 map = if(binding.chipPolice.isChecked) naverMap else null
             }
+            marker.setOnClickListener {
+                val type = store.type
+                Toast.makeText(requireContext(), type, Toast.LENGTH_SHORT).show()
+                true  // 이벤트 처리를 완료했다는 의미로 true 반환
+            }
+
             viewModel.addToStoreMarkers(marker)
         }
     }
@@ -296,6 +316,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 height = 100
                 anchor = PointF(0f, 1f)
                 icon = OverlayImage.fromResource(R.drawable.flag)
+                captionText = destination.name
                 map = naverMap
                 setOnClickListener {
                     showAddressBottomSheet(destination)
