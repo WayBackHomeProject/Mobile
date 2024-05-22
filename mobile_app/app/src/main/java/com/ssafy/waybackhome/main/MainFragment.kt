@@ -9,6 +9,7 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -106,6 +107,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
     private fun deleteDestination(destination: Destination){
         destinationViewModel.deleteDestination(destination)
+        hideAddressBottomSheet()
     }
     private fun moveCameraTo(location: LatLng){
         val cameraMove = CameraUpdate.scrollTo(location).animate(
@@ -197,6 +199,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         binding.mainBottomSheet.visibility = View.VISIBLE
         binding.mainFragFab.visibility = View.VISIBLE
+        binding.mainBottomSheet.adjustMapSize()
         onBackCallback.isEnabled = false
     }
     /**
@@ -205,6 +208,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun adjustMapSize(){
         val totalHeight = binding.root.height
         val bottomSheetTop = binding.mainBottomSheet.top
+        naverMap.setContentPadding(0, 100, 0, totalHeight-bottomSheetTop, true)
+    }
+    private fun LinearLayout.adjustMapSize(){
+        val totalHeight = binding.root.height
+        val bottomSheetTop = this.top
         naverMap.setContentPadding(0, 100, 0, totalHeight-bottomSheetTop, true)
     }
     private fun loadMarkerData(location: LatLng){
@@ -366,19 +374,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         binding.rvDestinations.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.mainBottomSheet)
-        bottomSheetBehavior.state = viewModel.bottomSheetState
         // BottomSheet 크기에 따라 맵 사이즈 조절
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                viewModel.bottomSheetState = newState
                 if(newState != BottomSheetBehavior.STATE_EXPANDED){
-                    adjustMapSize()
+                    binding.mainBottomSheet.adjustMapSize()
                 }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_DRAGGING || bottomSheetBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
-                    adjustMapSize()
+                    binding.mainBottomSheet.adjustMapSize()
                 }
             }
         })
@@ -387,8 +393,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         addressBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if(newState == BottomSheetBehavior.STATE_HIDDEN) hideAddressBottomSheet()
+                //else if(newState == BottomSheetBehavior.STATE_EXPANDED) binding.addressBottomSheet.adjustMapSize()
             }
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_DRAGGING || addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
+                    binding.addressBottomSheet.adjustMapSize()
+                }
+            }
         })
     }
     private fun initObserver(){
