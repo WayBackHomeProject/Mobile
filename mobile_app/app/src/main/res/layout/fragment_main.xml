@@ -17,25 +17,37 @@
         android:id="@+id/main_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:clipChildren="false"
         android:clipToPadding="false"
+
         android:scrollbars="none">
 
-        <com.google.android.material.chip.ChipGroup
+        <LinearLayout
             android:id="@+id/cg_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="8dp"
             android:layout_gravity="end"
             android:clipChildren="false"
-            android:clipToPadding="false"
-            app:singleSelection="false">
+            android:clipToPadding="false">
+
+            <ImageButton
+                android:id="@+id/btn_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/shape_rounded_button"
+                android:elevation="8dp"
+                android:padding="4dp"
+                android:src="@drawable/baseline_add_24" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_police"
                 style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="🚓 경찰서"
                 app:chipStartPadding="4dp" />
 
@@ -44,6 +56,7 @@
                 style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="🏪 편의점" />
 
             <com.google.android.material.chip.Chip
@@ -51,6 +64,7 @@
                 style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="🆘 비상벨" />
 
             <com.google.android.material.chip.Chip
@@ -58,8 +72,9 @@
                 style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="🎥 CCTV" />
-        </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
 
     </HorizontalScrollView>
 
