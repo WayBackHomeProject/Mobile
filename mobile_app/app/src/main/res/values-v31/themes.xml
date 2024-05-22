@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.WayBackHome" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorSecondary">@color/primaryShade</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:windowSplashScreenBackground">@drawable/splash</item>
+    </style>
+</resources>
