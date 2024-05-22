@@ -14,10 +14,10 @@ abstract class BaseDialogFragment<T : ViewBinding>(private val inflateMethod : (
     private var _binding : T? = null
     val binding get() = _binding!!
 
-    fun initView(){
+    fun initDialogView(){
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val attributes = dialog?.window?.attributes?.apply {
-            width = WindowManager.LayoutParams.MATCH_PARENT
+            width = (requireContext().resources.displayMetrics.widthPixels*0.9).toInt()
         }
         dialog?.window?.attributes = attributes
     }
@@ -32,7 +32,7 @@ abstract class BaseDialogFragment<T : ViewBinding>(private val inflateMethod : (
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
+        initDialogView()
     }
     override fun onDestroyView() {
         super.onDestroyView()

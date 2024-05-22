@@ -29,6 +29,11 @@ class MainViewModel : ViewModel() {
 
     private val repo = LocalRepository.instance
 
+    private var _range = MutableLiveData(1000f)
+    val range : LiveData<Float> get() = _range
+    fun setRange(value : Float){
+        _range.value = value
+    }
     /**
      * 로컬 DB에 저장된 목적지 정보
      */
