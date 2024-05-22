@@ -5,6 +5,7 @@
         <item name="android:textColor">@color/chip_text_state_list</item>
         <item name="checkedIconVisible">false</item>
         <item name="chipIconVisible">false</item>
+        <item name="android:elevation">4dp</item>
     </style>
 
     <style name="Divider">
@@ -26,5 +27,6 @@
 
     <style name="BottomSheetDefault" parent="Widget.Material3.BottomSheet">
         <item name="backgroundTint">@color/background</item>
+        <item name="android:elevation">12dp</item>
     </style>
 </resources>
