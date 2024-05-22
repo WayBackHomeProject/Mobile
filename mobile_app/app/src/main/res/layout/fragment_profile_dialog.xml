@@ -16,16 +16,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="helloword"
+        android:text="Safe Tip"
         android:layout_marginTop="20dp"
         android:textSize="17sp"
-        android:textColor="@color/black"
+        android:textColor="@color/primary"
         android:textStyle="bold"
         android:id="@+id/dialog_title_tv" />
 
     <TextView
+        android:id="@+id/dialog_main_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/primary"
         android:text="hi"
         app:layout_constraintBottom_toTopOf="@+id/profile_btn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,5 +44,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="20dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/profile_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:indeterminateTint="@color/primary"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_title_tv" />
+
+    <TextView
+        android:id="@+id/progress__loading_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="loading.."
+        app:layout_constraintBottom_toTopOf="@+id/profile_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

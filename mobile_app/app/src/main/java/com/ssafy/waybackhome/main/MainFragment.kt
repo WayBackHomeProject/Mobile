@@ -43,7 +43,7 @@ import com.ssafy.waybackhome.data.police.PoliceStationData
 import com.ssafy.waybackhome.data.store.StoreData
 import com.ssafy.waybackhome.databinding.FragmentMainBinding
 import com.ssafy.waybackhome.destination.DestinationViewModel
-import com.ssafy.waybackhome.dialog.ProfileDialog
+import com.ssafy.waybackhome.dialog.ProfileDialogFragment
 import com.ssafy.waybackhome.permission.PermissionChecker
 import com.ssafy.waybackhome.util.BaseFragment
 import com.ssafy.waybackhome.util.formatMeter
@@ -373,7 +373,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             openSearch()
         }
         binding.mainFragFab.setOnClickListener{
-            ProfileDialog(requireContext()).show()
+//            ProfileDialog(requireContext()).show()
+            ProfileDialogFragment().show(childFragmentManager, "ProfileDialogFragment")
         }
         binding.btnDelete.setOnClickListener {
             viewModel.selectedDestination?.let { deleteDestination(it) }
