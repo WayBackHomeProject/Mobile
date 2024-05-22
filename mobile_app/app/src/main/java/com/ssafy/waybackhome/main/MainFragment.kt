@@ -53,6 +53,7 @@ import com.ssafy.waybackhome.util.formatMeter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Date
 import java.util.Locale
 
 private const val TAG = "MainFragment_싸피"
@@ -83,6 +84,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     )
 
     private lateinit var onBackCallback : OnBackPressedCallback
+    private var prevEventTime : Date? = null
 
     private fun showPermissionRequestDialog(){
         permissionChecker.moveToSettings()
@@ -111,10 +113,27 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         )
         naverMap.moveCamera(cameraMove)
     }
-    private fun onBackButtonEvent(){
-        if(addressBottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
-            hideAddressBottomSheet()
+    private fun addBackButtonEvent(){
+        requireActivity().onBackPressedDispatcher.addCallback(this){
+            if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED){
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            } else {
+                val current = Date()
+                if(prevEventTime == null || (prevEventTime!!.time - current.time)/1000 > 60){
+                    prevEventTime = current
+                    Toast.makeText(requireContext(), "'뒤로가기' 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    prevEventTime = null
+                    requireActivity().finish()
+                }
+            }
         }
+        onBackCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if(addressBottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
+                hideAddressBottomSheet()
+            }
+        }
+        onBackCallback.isEnabled = false
     }
     private fun selectLocation(location: LatLng){
         CoroutineScope(Dispatchers.Main).launch {
@@ -408,10 +427,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         binding.btnCreate.setOnClickListener {
             viewModel.selectedDestination?.let { makeNewDestination(it) }
         }
-        onBackCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            onBackButtonEvent()
-            isEnabled = false
-        }
+        addBackButtonEvent()
     }
     // 맵 초기화 이후에 활성화되는 관찰자
     // naverMap 객체에 의존적
