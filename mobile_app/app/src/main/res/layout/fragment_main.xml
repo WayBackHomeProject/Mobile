@@ -17,6 +17,9 @@
         android:id="@+id/main_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:scrollbars="none">
 
         <com.google.android.material.chip.ChipGroup
@@ -24,34 +27,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:singleSelection="false">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_police"
+                style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/CustomChipChoice"
-                android:text="🚓 경찰서" />
+                android:text="🚓 경찰서"
+                app:chipStartPadding="4dp" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_store"
+                style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/CustomChipChoice"
                 android:text="🏪 편의점" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_lamp"
+                style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/CustomChipChoice"
                 android:text="🆘 비상벨" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_cctv"
+                style="@style/CustomChipChoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/CustomChipChoice"
                 android:text="🎥 CCTV" />
         </com.google.android.material.chip.ChipGroup>
 
@@ -72,6 +78,7 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="@drawable/shape_rounded_top_corners"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -83,15 +90,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/btn_add_dest"
-                style="@style/ButtonStyle"
+                style="@style/ButtonDefault"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/btn_primary_shade"
                 android:text="🚩 목적지 추가"
+                android:textSize="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/handle" />
@@ -100,22 +107,22 @@
                 android:id="@+id/boaderline"
                 android:layout_width="match_parent"
                 android:layout_height="4px"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:background="#1f1f1f"
+                android:background="@color/light_grey"
                 app:layout_constraintBottom_toTopOf="@id/rv_destinations"
                 app:layout_constraintTop_toBottomOf="@id/btn_add_dest"
 
-                />
+                tools:layout_editor_absoluteX="16dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_destinations"
                 android:layout_width="0dp"
-                android:layout_height="300dp"
+                android:layout_height="0dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/boaderline" />
@@ -241,16 +248,16 @@
         app:layout_anchor="@id/main_bottom_sheet"
         app:layout_anchorGravity="end"
         >
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/main_frag_fab"
-            android:backgroundTint="@color/primaryShade"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/question_mark"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="40dp"
-            app:tint="@color/white"
-            />
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/primaryShade"
+            android:src="@drawable/question_mark"
+            app:tint="@color/white" />
     </LinearLayout>
 
 
