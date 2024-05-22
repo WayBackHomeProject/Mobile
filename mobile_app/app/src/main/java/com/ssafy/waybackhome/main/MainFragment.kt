@@ -3,6 +3,7 @@ package com.ssafy.waybackhome.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.PointF
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -10,6 +11,8 @@ import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -79,6 +82,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
+    private lateinit var onBackCallback : OnBackPressedCallback
+
     private fun showPermissionRequestDialog(){
         permissionChecker.moveToSettings()
         //Toast.makeText(requireContext(), "rejected", Toast.LENGTH_SHORT).show()
@@ -106,6 +111,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         )
         naverMap.moveCamera(cameraMove)
     }
+    private fun onBackButtonEvent(){
+        if(addressBottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
+            hideAddressBottomSheet()
+        }
+    }
     private fun selectLocation(location: LatLng){
         CoroutineScope(Dispatchers.Main).launch {
             val address = Geocoder(requireContext(), Locale.KOREA).getFromLocation(location.latitude, location.longitude,1)?.first()
@@ -126,11 +136,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         val location = LatLng(destination.lat, destination.lng)
         val marker = Marker().apply {
             position = location
-            width = 60
-            height = 70
+            width = 100
+            height = 100
+            anchor = PointF(0f, 1f)
+            icon = OverlayImage.fromResource(R.drawable.flag)
             captionText = destination.address
-            icon = OverlayImage.fromResource(R.drawable.baseline_edit_location_alt_24)
-            iconTintColor = Color.GREEN
             map = naverMap
         }
         viewModel.setAddressMarker(marker)
@@ -157,6 +167,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         binding.btnEdit.visibility = if(hasName) View.VISIBLE else View.GONE
         binding.btnCreate.visibility = if(hasName) View.GONE else View.VISIBLE
         addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        onBackCallback.isEnabled = true
     }
     /**
      * 화면 터치 시
@@ -167,6 +178,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         binding.mainBottomSheet.visibility = View.VISIBLE
         binding.mainFragFab.visibility = View.VISIBLE
+        onBackCallback.isEnabled = false
     }
     /**
      * BottomSheet 사이즈에 따른 Map 사이즈 조절
@@ -254,8 +266,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 position = markerPosition
                 width = 100
                 height = 100
+                anchor = PointF(0f, 1f)
                 icon = OverlayImage.fromResource(R.drawable.flag)
                 map = naverMap
+                setOnClickListener {
+                    showAddressBottomSheet(destination)
+                    moveCameraTo(destination.location)
+                    false
+                }
             }
             viewModel.addToDestinationMarkers(marker)
         }
@@ -294,7 +312,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun enableLocationTracking() {
         //fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
-
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
@@ -348,6 +365,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         })
         addressBottomSheetBehavior = BottomSheetBehavior.from(binding.addressBottomSheet)
         addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        addressBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if(newState == BottomSheetBehavior.STATE_HIDDEN) hideAddressBottomSheet()
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
     }
     private fun initObserver(){
         // 목적지 목록 갱신
@@ -385,6 +408,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         binding.btnCreate.setOnClickListener {
             viewModel.selectedDestination?.let { makeNewDestination(it) }
         }
+        onBackCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            onBackButtonEvent()
+            isEnabled = false
+        }
     }
     // 맵 초기화 이후에 활성화되는 관찰자
     // naverMap 객체에 의존적
@@ -401,7 +428,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         viewModel.stores.observe(viewLifecycleOwner){ stores ->
             setStoreMarkers(stores)
         }
-
         locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
             // 카메라 현재 위치로 이동
             naverMap.moveCamera(CameraUpdate.toCameraPosition(CameraPosition(location, 16.0)))
@@ -482,7 +508,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
         initPostMapReadyListener()
         initPostMapReadyObserver()
-
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
