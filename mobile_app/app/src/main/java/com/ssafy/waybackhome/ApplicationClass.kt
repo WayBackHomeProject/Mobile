@@ -20,8 +20,8 @@ class ApplicationClass : Application() {
             .create()
 
         val defaultClient = OkHttpClient().newBuilder()
-            .readTimeout(5_000, TimeUnit.MILLISECONDS)
-            .connectTimeout(5_000, TimeUnit.MILLISECONDS)
+            .readTimeout(10_000, TimeUnit.MILLISECONDS)
+            .connectTimeout(10_000, TimeUnit.MILLISECONDS)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)) // interceptor enables log of http transitions
             //.addInterceptor(HeaderInterceptor()) // interceptor for adding auth header
             .build()
