@@ -225,11 +225,18 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val markerPosition = LatLng(cctv.latitude, cctv.longitude)
             val marker = Marker().apply {
                 position = markerPosition
-                width = 30
-                height = 30
+                width = 40
+                height = 40
+                minZoom = 14.0
+                maxZoom = 21.0
+                captionMinZoom = 16.0
+                captionMaxZoom = 21.0
+                isHideCollidedSymbols = true //cctv 마커와 기존 객체가 겹칠 때
+                isHideCollidedMarkers = true //마커 끼리 겹칠 때, 하나만 표시해주는 속성, 이 속성을 켜거나 minMaxZoom을 사용하기
                 icon = OverlayImage.fromResource(R.drawable.cctv)
+                isIconPerspectiveEnabled = true
                 captionText = cctv.purpose
-                captionTextSize = 8.0f
+                captionTextSize = 10.0f
                 map = if(binding.chipCctv.isChecked) naverMap else null
             }
             marker.setOnClickListener {
@@ -241,9 +248,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val circle = CircleOverlay().apply {
                 center = markerPosition
                 radius = 40.0
+                minZoom = 14.0
+                maxZoom = 21.0
                 color = Color.argb(100,254, 254, 100)
                 outlineWidth = 1 // 테두리의 두께 설정
-                outlineColor = Color.BLACK // 테두리의 색상 설정
+                outlineColor = Color.argb(80,0,0,0) // 테두리의 색상 설정
                 map = if(binding.chipCctv.isChecked) naverMap else null
             }
             viewModel.addToCctvMarkers(marker)
@@ -256,11 +265,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val markerPosition = LatLng(station.lat, station.lng)
             val marker = Marker().apply {
                 position = markerPosition
-                width = 100
-                height = 100
+                width = 120
+                height = 120
+                minZoom = 14.0
+                maxZoom = 21.0
+                captionMinZoom = 14.0
+                captionMaxZoom = 21.0
+                isHideCollidedSymbols = true
                 icon = OverlayImage.fromResource(R.drawable.police)
+                isIconPerspectiveEnabled = true
                 captionText = station.department + station.type
-                captionTextSize = 10.0f
+                captionTextSize = 12.0f
                 map = if(binding.chipPolice.isChecked) naverMap else null
             }
             marker.setOnClickListener {
@@ -280,6 +295,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 position = markerPosition
                 width = 75
                 height = 75
+                minZoom = 14.0
+                maxZoom = 21.0
+                captionMinZoom = 16.0
+                captionMaxZoom = 21.0
                 icon = OverlayImage.fromResource(R.drawable.alert)
                 map = if(binding.chipPolice.isChecked) naverMap else null
             }
@@ -294,6 +313,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 position = markerPosition
                 width = 75
                 height = 75
+                minZoom = 14.0
+                maxZoom = 21.0
+                captionMinZoom = 16.0
+                captionMaxZoom = 21.0
+                captionText = store.name
+                captionTextSize = 10.0f
+                isHideCollidedMarkers = true //마커 끼리 겹칠 때, 하나만 표시해주는 속성
+                isHideCollidedSymbols = true //마커와 기존 편의점 겹치면 기존 편의점 가리기
+                isIconPerspectiveEnabled = true
                 icon = OverlayImage.fromResource(R.drawable.conveniencestore)
                 map = if(binding.chipPolice.isChecked) naverMap else null
             }
@@ -316,6 +344,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 height = 100
                 anchor = PointF(0f, 1f)
                 icon = OverlayImage.fromResource(R.drawable.flag)
+                isIconPerspectiveEnabled = true
                 captionText = destination.name
                 map = naverMap
                 setOnClickListener {
@@ -511,6 +540,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         naverMap.setOnMapLongClickListener { pointF, latLng ->
             selectLocation(latLng)
         }
+
     }
     private fun initPermissionEventListener(){
         // 위치 권한 요청을 수락하였을 때
