@@ -39,8 +39,6 @@ class MainViewModel : ViewModel() {
         selectedDestination = destination
     }
 
-    var bottomSheetState : Int = BottomSheetBehavior.STATE_COLLAPSED
-
     private var _addressMarker = Marker()
     fun setAddressMarker(marker: Marker){
         _addressMarker = marker
