@@ -9,40 +9,17 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/tb_destination"
+        style="@style/ToolBarDefault"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:titleCentered="true"
         app:menu="@menu/menu_close"
         app:navigationIcon="@drawable/baseline_arrow_back_ios_24">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            tools:layout_editor_absoluteX="56dp"
-            tools:layout_editor_absoluteY="20dp">
-
-            <TextView
-                android:text="🚩 "
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/tv_destination_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="title"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                tools:layout_editor_absoluteX="56dp"
-                tools:layout_editor_absoluteY="22dp" />
-
-        </LinearLayout>
-
 
     </com.google.android.material.appbar.MaterialToolbar>
 
@@ -50,19 +27,23 @@
         android:id="@+id/map_destination_page"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/name_input_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tb_destination"
-        app:layout_constraintVertical_bias="0.0">
-    </FrameLayout>
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/name_input_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/shape_rounded_top_corners"
+        android:clipChildren="true"
+        android:elevation="8dp"
         android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -72,8 +53,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            app:hintEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -82,11 +64,13 @@
                 android:id="@+id/et_destination_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border_box"
                 android:hint="목적지 별명"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
+            style="@style/ButtonDefault"
             android:id="@+id/btn_destination_confirm"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

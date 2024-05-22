@@ -25,8 +25,17 @@
         <item name="cardBackgroundColor">@color/background</item>
     </style>
 
+    <style name="HandleDefault" parent="Widget.Material3.BottomSheet.DragHandle">
+        <item name="tint">@color/grey</item>
+    </style>
+
     <style name="BottomSheetDefault" parent="Widget.Material3.BottomSheet">
         <item name="backgroundTint">@color/background</item>
         <item name="android:elevation">12dp</item>
+    </style>
+
+    <style name="ToolBarDefault" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/background</item>
+        <item name="android:elevation">8dp</item>
     </style>
 </resources>

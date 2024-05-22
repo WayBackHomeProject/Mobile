@@ -1,10 +1,10 @@
 package com.ssafy.waybackhome.destination
 
+import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
@@ -14,6 +14,7 @@ import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.ssafy.waybackhome.BuildConfig
 import com.ssafy.waybackhome.R
 import com.ssafy.waybackhome.data.Destination
@@ -51,15 +52,23 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
     private fun setLocation(){
         destinationViewModel.destination.value?.run {
             val markerPosition = LatLng(lat, lng)
-            val marker = Marker()
-            marker.position = markerPosition
-            marker.width = 30
-            marker.height = 30
-            marker.map = naverMap
+            val marker = Marker().apply {
+                position = markerPosition
+                width = 100
+                height = 100
+                anchor = PointF(0.2f, 0.9f)
+                icon = OverlayImage.fromResource(R.drawable.flag)
+                map = naverMap
+            }
 
             //Log.d(TAG, "setLocation: $markerPosition")
             naverMap.cameraPosition = CameraPosition(markerPosition, 16.0)
         }
+    }
+    private fun adjustMapSize(){
+        val totalHeight = binding.root.height
+        val bottomSheetTop = binding.nameInputLayout.top
+        naverMap.setContentPadding(0, 100, 0, totalHeight-bottomSheetTop, true)
     }
     private fun initObserver(){
         destinationViewModel.destination.observe(viewLifecycleOwner){ destination ->
@@ -68,7 +77,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
     }
     private fun initView(destination: Destination){
         binding.tbDestination.setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
-        binding.tvDestinationTitle.text = destination.address
+        binding.tbDestination.title = destination.address
         binding.etDestinationName.setText(destination.name)
 //        binding.btnEditDestination.visibility = if(destinationViewModel.destination.value?.name.isNullOrBlank()) View.GONE else View.VISIBLE
     }
@@ -90,7 +99,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
             }
             false
         }
-        binding.tvDestinationTitle.setOnClickListener {
+        binding.tbDestination.setOnClickListener {
             destinationViewModel.destination.value?.run {
                 val action = DestinationFragmentDirections.actionDestinationFragmentToSearchAddressFragment(address)
                 findNavController().navigate(action)
@@ -119,6 +128,7 @@ class DestinationFragment : BaseFragment<FragmentDestinationBinding>(FragmentDes
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
 
+        adjustMapSize()
         setLocation()
     }
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -2,22 +2,38 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/primaryBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".search.SearchAddressFragment">
 
-
     <androidx.appcompat.widget.Toolbar
+        style="@style/ToolBarDefault"
         android:id="@+id/tb_destination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-
+        app:contentInsetStartWithNavigation="0dp"
         app:navigationIcon="@drawable/baseline_arrow_back_ios_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent">
+        <SearchView
+            android:id="@+id/sv_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:searchIcon="@null"
+            android:queryHint="목적지 주소 검색어 입력"
+            android:queryBackground="@null"
+            android:paddingStart="-16dp"
+            app:iconifiedByDefault="false"
+            app:layout_constraintBottom_toBottomOf="@+id/tb_destination"
+            app:layout_constraintEnd_toEndOf="@+id/tb_destination"
+            app:layout_constraintStart_toStartOf="@+id/tb_destination"
+            app:layout_constraintTop_toTopOf="@id/tb_destination"/>
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_search_result"
@@ -31,20 +47,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tb_destination" />
 
-    <SearchView
-        android:id="@+id/sv_address"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginEnd="16dp"
-        android:iconifiedByDefault="false"
-        android:searchIcon="@null"
-        android:queryHint="목적지 주소 검색어 입력"
-        app:iconifiedByDefault="false"
-        app:layout_constraintBottom_toBottomOf="@+id/tb_destination"
-        app:layout_constraintEnd_toEndOf="@+id/tb_destination"
-        app:layout_constraintStart_toStartOf="@+id/tb_destination"
-        app:layout_constraintTop_toTopOf="@id/tb_destination"
-        app:queryHint="Address" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
