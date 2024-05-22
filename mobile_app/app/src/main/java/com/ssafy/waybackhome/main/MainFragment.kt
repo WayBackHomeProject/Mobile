@@ -223,7 +223,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         naverMap.setContentPadding(0, 100, 0, totalHeight-bottomSheetTop, true)
     }
     private fun loadMarkerData(location: LatLng){
-        viewModel.getAllData(location, 2.0)
+        viewModel.getAllData(location, viewModel.range.value?.div(1_000.0) ?: 1.0)
     }
     private fun setCctvMarker(cctvList : List<CctvData>){
         viewModel.clearCctvMarkers()
@@ -441,6 +441,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             }
             destinationAdapter.submitList(sorted)
         }
+        viewModel.range.observe(viewLifecycleOwner){ value ->
+            binding.btnDistance.text = value.formatMeter()
+        }
         // 위치에 따른 목적지 목록 순서 갱신
         locationViewModel.currentLocation.observe(viewLifecycleOwner){location ->
             onLocationChange(location)
@@ -495,6 +498,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
         viewModel.destinations.observe(viewLifecycleOwner){destinations ->
             setDestinationMarkers(destinations)
+        }
+        viewModel.range.observe(viewLifecycleOwner){value->
+            locationViewModel.currentLocation.value?.let { loadMarkerData(it) }
         }
     }
     // 맵 초기화 이후에 활성화되는 리스너
