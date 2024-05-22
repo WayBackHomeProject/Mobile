@@ -2,6 +2,12 @@
 <resources>
     <color name="primary">#FF6dacd2</color>
     <color name="primaryShade">#FFe2f5fe</color>
+    <color name="background">#FFFFFFFF</color>
+    <color name="on_background">#FF161718</color>
+    <color name="grey">#FFb2b2b2</color>
+    <color name="light_grey">#FFe6e6e6</color>
+    <color name="warning_background">#FFffc5c5</color>
+    <color name="warning">#FFff6161</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

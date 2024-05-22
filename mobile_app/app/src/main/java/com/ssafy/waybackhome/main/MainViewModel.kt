@@ -13,6 +13,7 @@ import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.ssafy.waybackhome.R
+import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.data.LocalRepository
 import com.ssafy.waybackhome.data.alarmbell.AlarmBellData
 import com.ssafy.waybackhome.data.alarmbell.AlarmBellService
@@ -32,6 +33,11 @@ class MainViewModel : ViewModel() {
      * 로컬 DB에 저장된 목적지 정보
      */
     val destinations = repo.selectAllDestination()
+    var selectedDestination : Destination? = null
+        private set
+    fun selectDestination(destination: Destination) {
+        selectedDestination = destination
+    }
 
     var bottomSheetState : Int = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -56,6 +62,14 @@ class MainViewModel : ViewModel() {
         }
         markers.clear()
     }
+    private fun clearCircles(circles : MutableList<CircleOverlay>){
+        for(circle : CircleOverlay in circles){
+            circle.map = null
+        }
+        circles.clear()
+    }
+
+
     fun getAllData(location: LatLng, radius: Double){
         getCctvData(location, radius)
         getPoliceStationData(location, radius)
@@ -83,6 +97,7 @@ class MainViewModel : ViewModel() {
     var cctvCircles = mutableListOf<CircleOverlay>()
 
     private var _cctvMarkers = mutableListOf<Marker>()
+    private var _cctvCircles = mutableListOf<CircleOverlay>()
     /**
      * @param naverMap naverMap : Visible / null : Invisible
      */
@@ -92,12 +107,17 @@ class MainViewModel : ViewModel() {
         }
     }
     fun setCctvCirclesVisibility(naverMap: NaverMap?){
-        cctvCircles.forEach {marker ->
+        _cctvCircles.forEach {marker ->
             marker.map = naverMap
         }
     }
     fun addToCctvMarkers(marker: Marker) = _cctvMarkers.add(marker)
-    fun clearCctvMarkers() = clearMarkers(_cctvMarkers)
+    fun addToCctvCircles(circle: CircleOverlay) = _cctvCircles.add(circle)
+    fun clearCctvMarkers() :Unit {
+        clearMarkers(_cctvMarkers)
+        clearCircles(_cctvCircles)
+    }
+
 
     private var _stores = MutableLiveData<List<StoreData>>()
     val stores : LiveData<List<StoreData>> get() = _stores
@@ -153,7 +173,9 @@ class MainViewModel : ViewModel() {
         }
     }
     fun addToPoliceStationMarkers(marker: Marker) = _policeStationMarkers.add(marker)
-    fun clearPoliceStationMarkers() = clearMarkers(_policeStationMarkers)
+    fun clearPoliceStationMarkers():Unit {
+        clearMarkers(_policeStationMarkers)
+    }
 
     private var _alarmBells = MutableLiveData<List<AlarmBellData>>()
     val alarmBells : LiveData<List<AlarmBellData>> get() = _alarmBells

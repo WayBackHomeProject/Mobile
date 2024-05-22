@@ -13,6 +13,7 @@ import com.ssafy.waybackhome.data.Destination
 import com.ssafy.waybackhome.databinding.ListItemDestinationBinding
 import com.ssafy.waybackhome.util.OnItemClickListener
 import com.ssafy.waybackhome.util.OnItemOptionsClickListener
+import com.ssafy.waybackhome.util.formatMeter
 
 class DestinationListAdapter(private val context : Context, private val location : LiveData<LatLng>) : ListAdapter<Destination, DestinationListAdapter.DestinationViewHolder>(DestinationComparator) {
 
@@ -34,14 +35,11 @@ class DestinationListAdapter(private val context : Context, private val location
             binding.root.setOnClickListener {
                 onItemClickListener?.onClick(item)
             }
-            binding.btnListItemMore.setOnClickListener {
-                onItemOptionsClickListener?.onClick(item, it)
-            }
         }
         fun updateDistance(location : LatLng){
             item?.run {
                 val dist = location.distanceTo(LatLng(lat, lng))
-                binding.tvListItemDestinationDist.text = if(dist > 1_000) "%.1f km".format(dist/1_000) else "%.1f m".format(dist)
+                binding.tvListItemDestinationDist.text = dist.formatMeter()
             }
         }
     }
