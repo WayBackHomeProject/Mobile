@@ -409,6 +409,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
         onBackCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             onBackButtonEvent()
+            isEnabled = false
         }
     }
     // 맵 초기화 이후에 활성화되는 관찰자
