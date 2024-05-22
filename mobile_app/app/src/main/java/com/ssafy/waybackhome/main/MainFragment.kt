@@ -231,6 +231,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 map = if(binding.chipCctv.isChecked) naverMap else null
             }
 
+
             val circle = CircleOverlay().apply {
                 center = markerPosition
                 radius = 40.0
