@@ -236,7 +236,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 position = markerPosition
                 width = 40
                 height = 40
-                minZoom = 14.0
+//                minZoom = 14.0
                 maxZoom = 21.0
                 captionMinZoom = 16.0
                 captionMaxZoom = 21.0
@@ -257,7 +257,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             val circle = CircleOverlay().apply {
                 center = markerPosition
                 radius = 40.0
-                minZoom = 14.0
+//                minZoom = 14.0
                 maxZoom = 21.0
                 color = Color.argb(100,254, 254, 100)
                 outlineWidth = 1 // 테두리의 두께 설정
@@ -276,7 +276,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 position = markerPosition
                 width = 120
                 height = 120
-                minZoom = 14.0
+//                minZoom = 14.0
                 maxZoom = 21.0
                 captionMinZoom = 14.0
                 captionMaxZoom = 21.0
@@ -304,7 +304,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 position = markerPosition
                 width = 75
                 height = 75
-                minZoom = 14.0
+//                minZoom = 14.0
                 maxZoom = 21.0
                 captionMinZoom = 16.0
                 captionMaxZoom = 21.0
@@ -322,7 +322,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 position = markerPosition
                 width = 75
                 height = 75
-                minZoom = 14.0
+//                minZoom = 14.0
                 maxZoom = 21.0
                 captionMinZoom = 16.0
                 captionMaxZoom = 21.0
