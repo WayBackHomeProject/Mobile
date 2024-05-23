@@ -168,7 +168,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             height = 100
             anchor = PointF(0f, 1f)
             icon = OverlayImage.fromResource(R.drawable.flag)
-            captionText = destination.address
+            captionText = destination.name.ifBlank { destination.address }
             map = naverMap
         }
         viewModel.setAddressMarker(marker)
