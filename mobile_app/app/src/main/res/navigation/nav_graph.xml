@@ -13,7 +13,11 @@
         <action
             android:id="@+id/action_searchAddressFragment_to_destinationFragment"
             app:destination="@id/destinationFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
             app:launchSingleTop="true"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@id/destinationFragment" />
         <argument
             android:name="address"
@@ -40,7 +44,11 @@
         android:label="MainFragment" >
         <action
             android:id="@+id/action_mainFragment_to_searchAddressFragment"
-            app:destination="@id/searchAddressFragment" />
+            app:destination="@id/searchAddressFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_mainFragment_to_destinationFragment"
             app:destination="@id/destinationFragment" />
