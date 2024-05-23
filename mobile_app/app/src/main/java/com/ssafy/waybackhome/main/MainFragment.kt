@@ -354,6 +354,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 anchor = PointF(0f, 1f)
                 icon = OverlayImage.fromResource(R.drawable.flag)
                 isIconPerspectiveEnabled = true
+                isHideCollidedSymbols = true //마커와 기존 naverMap마커 겹치면 기존 편의점 가리기
+
                 captionText = destination.name
                 map = naverMap
                 setOnClickListener {
