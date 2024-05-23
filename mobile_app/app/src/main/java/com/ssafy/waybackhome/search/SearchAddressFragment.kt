@@ -66,6 +66,7 @@ class SearchAddressFragment : BaseFragment<FragmentSearchAddressBinding>(Fragmen
     }
     private fun initObserver(){
         searchViewModel.addressList.observe(viewLifecycleOwner){ list ->
+            binding.tvNoResult.visibility = if(list.isEmpty()) View.VISIBLE else View.GONE
             adapter.submitList(list)
         }
     }
