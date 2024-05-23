@@ -173,13 +173,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
         viewModel.setAddressMarker(marker)
         moveCameraTo(location)
-        viewModel.selectDestination(destination)
+
         showAddressBottomSheet(destination)
     }
     /**
      * 맵에 롱클릭 시
      */
     private fun showAddressBottomSheet(destination: Destination){
+        viewModel.selectDestination(destination)
+
         binding.mainBottomSheet.visibility = View.GONE
         binding.mainFragFab.visibility = View.GONE
 
@@ -411,7 +413,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
 
     private fun initView(){
-        destinationAdapter = DestinationListAdapter(requireContext(), locationViewModel.currentLocation)
+        destinationAdapter = DestinationListAdapter(locationViewModel.currentLocation)
         destinationAdapter.setOnItemClickListener{dest ->
             markSelectedDestination(dest)
         }
@@ -432,33 +434,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         binding.rvDestinations.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.mainBottomSheet)
-        // BottomSheet 크기에 따라 맵 사이즈 조절
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if(newState != BottomSheetBehavior.STATE_EXPANDED){
-                    binding.mainBottomSheet.adjustMapSize()
-                }
-            }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_DRAGGING || bottomSheetBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
-                    binding.mainBottomSheet.adjustMapSize()
-                }
-            }
-        })
         addressBottomSheetBehavior = BottomSheetBehavior.from(binding.addressBottomSheet)
         addressBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        addressBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if(newState == BottomSheetBehavior.STATE_HIDDEN) hideAddressBottomSheet()
-                //else if(newState == BottomSheetBehavior.STATE_EXPANDED) binding.addressBottomSheet.adjustMapSize()
-            }
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_DRAGGING || addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
-                    binding.addressBottomSheet.adjustMapSize()
-                }
-            }
-        })
     }
     private fun initObserver(){
         // 목적지 목록 갱신
@@ -503,9 +481,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
         addBackButtonEvent()
     }
-
-
-
     // 맵 초기화 이후에 활성화되는 관찰자
     // naverMap 객체에 의존적
     private fun initPostMapReadyObserver(){
@@ -558,7 +533,31 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         naverMap.setOnMapLongClickListener { pointF, latLng ->
             selectLocation(latLng)
         }
+        // BottomSheet 크기에 따라 맵 사이즈 조절
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if(newState != BottomSheetBehavior.STATE_EXPANDED){
+                    binding.mainBottomSheet.adjustMapSize()
+                }
+            }
 
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_DRAGGING || bottomSheetBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
+                    binding.mainBottomSheet.adjustMapSize()
+                }
+            }
+        })
+        addressBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback(){
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if(newState == BottomSheetBehavior.STATE_HIDDEN) hideAddressBottomSheet()
+                //else if(newState == BottomSheetBehavior.STATE_EXPANDED) binding.addressBottomSheet.adjustMapSize()
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_DRAGGING || addressBottomSheetBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
+                    binding.addressBottomSheet.adjustMapSize()
+                }
+            }
+        })
     }
     private fun initPermissionEventListener(){
         // 위치 권한 요청을 수락하였을 때

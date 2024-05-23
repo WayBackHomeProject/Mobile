@@ -1,6 +1,5 @@
 package com.ssafy.waybackhome.main
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
@@ -15,7 +14,7 @@ import com.ssafy.waybackhome.util.OnItemClickListener
 import com.ssafy.waybackhome.util.OnItemOptionsClickListener
 import com.ssafy.waybackhome.util.formatMeter
 
-class DestinationListAdapter(private val context : Context, private val location : LiveData<LatLng>) : ListAdapter<Destination, DestinationListAdapter.DestinationViewHolder>(DestinationComparator) {
+class DestinationListAdapter(private val location : LiveData<LatLng>) : ListAdapter<Destination, DestinationListAdapter.DestinationViewHolder>(DestinationComparator) {
 
     private var onItemClickListener : OnItemClickListener<Destination>? = null
     private var onItemOptionsClickListener : OnItemOptionsClickListener<Destination>? = null
@@ -35,6 +34,9 @@ class DestinationListAdapter(private val context : Context, private val location
             binding.root.setOnClickListener {
                 onItemClickListener?.onClick(item)
             }
+            location.observe(itemView.context as LifecycleOwner){dist ->
+                updateDistance(dist)
+            }
         }
         fun updateDistance(location : LatLng){
             item?.run {
@@ -47,9 +49,6 @@ class DestinationListAdapter(private val context : Context, private val location
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DestinationViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val viewHolder = DestinationViewHolder(ListItemDestinationBinding.inflate(inflater, parent, false))
-        location.observe(viewHolder.itemView.context as LifecycleOwner){dist ->
-            viewHolder.updateDistance(dist)
-        }
         return viewHolder
     }
 
