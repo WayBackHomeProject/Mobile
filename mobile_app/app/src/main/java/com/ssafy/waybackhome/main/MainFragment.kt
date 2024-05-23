@@ -389,9 +389,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         // 현재 위치 설정
         locationViewModel.setLocation(currentLocation)
 
-        Toast.makeText(context,
-            "현재 위치 - 위도: ${currentLocation.latitude}, 경도: ${currentLocation.longitude}",
-            Toast.LENGTH_SHORT).show()
     }
     @SuppressLint("MissingPermission")
     private fun enableLocationTracking() {
